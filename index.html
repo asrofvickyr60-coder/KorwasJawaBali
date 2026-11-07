@@ -204,7 +204,7 @@ const PERAN={dalnis:'Pengendali teknis (Korwas)',katim:'Ketua tim',anggota:'Angg
 const ORANG0=[['I Made Parindra Wibawa','dalnis',1],['Henny Realita Purba','katim',0],['Danang Indrapraja','katim',0],['Rullyta Sari','katim',0],['Asrof Vicky Ramdhani','anggota',1],['Talitha Puspa Melati','anggota',0]].map(([nama,peran,admin],i)=>({nama,peran,admin:!!admin,aktif:true,urut:i+1}));
 const CFG0=()=>({jp:['Audit','Reviu','Evaluasi','Pemantauan','Pengawasan lainnya'],det:{Audit:['ADTT']},pgw:[],h:{},orang:ORANG0.map(o=>({...o}))});
 // login dengan nama pengguna: diubah menjadi alamat internal (tidak pernah dikirimi email)
-const UDOM='korwasjabal.tim',toEmail=u=>{u=String(u||'').trim().toLowerCase();return u.includes('@')?u:u+'@'+UDOM},unm=e=>String(e||'').endsWith('@'+UDOM)?e.split('@')[0]:e;
+const UDOM='korwasjabal.tim',toEmail=u=>{u=String(u||'').trim().toLowerCase().replace(/\s+/g,'-');return u.includes('@')?u:u+'@'+UDOM},unm=e=>String(e||'').endsWith('@'+UDOM)?e.split('@')[0]:e;
 
 // ---------- ORANG ----------
 // daftar orang di tim (siapa saja yang bisa dipilih sebagai dalnis/katim/anggota) — disimpan bersama di pengaturan
@@ -588,7 +588,7 @@ function atur(){const mg=isMgr(),M=S.m.slice().sort((a,b)=>(a.urut||0)-(b.urut||
  ${mg?`<div class="row" style="margin-top:8px"><input id="on" placeholder="Nama lengkap orang baru"><div style="flex:0 0 120px"><select id="op">${Object.entries(PR3).map(([k,l])=>`<option value="${k}" ${k=='anggota'?'selected':''}>${l}</option>`).join('')}</select></div><button class="s" onclick="oAdd()">Tambah</button></div>`:''}</div>
  ${acc?`<div class="card"><h2>🔑 Akun bersama tim</h2><small style="color:var(--m)">Satu nama pengguna + kata sandi untuk dipakai ramai-ramai, tanpa email. Setelah masuk, tiap orang memilih namanya sendiri. ${mg?'Isi lagi dengan nama pengguna yang sama untuk mengganti kata sandinya.':'Hanya Korwas atau admin yang bisa membuat atau mengganti kata sandi.'}</small>
  ${M.filter(m=>m.bersama).map(m=>`<div class="it"><b>${esc(unm(m.email))}</b> ${m.aktif?'<span class="st st-selesai">aktif</span>':'<span class="st st-pending">nonaktif</span>'} ${mg?`<button class="x" onclick="mSet('${esc(m.email)}','aktif',${!m.aktif})">${m.aktif?'Nonaktifkan':'Aktifkan'}</button>`:''}</div>`).join('')}
- ${mg?`<div class="row" style="margin-top:8px"><input id="bu" placeholder="Nama pengguna, mis. korwasjabal" autocomplete="off" autocapitalize="none" spellcheck="false"><input id="bp" type="password" placeholder="Kata sandi (min. 8 karakter)" autocomplete="new-password"><button class="s" onclick="akunBersama()">Simpan</button></div>`:''}</div>
+ ${mg?`<div class="row" style="margin-top:8px"><input id="bu" placeholder="Nama pengguna, mis. Korwas Jawa Bali" autocomplete="off" autocapitalize="none" spellcheck="false"><input id="bp" type="password" placeholder="Kata sandi (min. 8 karakter)" autocomplete="new-password"><button class="s" onclick="akunBersama()">Simpan</button></div>`:''}</div>
  <div class="card"><h2>Akun login pribadi</h2><small style="color:var(--m)">Opsional — untuk yang ingin masuk dengan email sendiri. Nama harus sama dengan nama di daftar orang di atas.</small>
  <div class="mrow h"><span>Nama</span><span>Email</span><span>Peran</span><span>Admin</span><span>Aktif</span><span></span></div>
  ${M.filter(m=>!m.bersama).map((m,i)=>`<div class="mrow"><input value="${esc(m.nama)}" ${mg?'':'disabled'} onchange="mSet('${esc(m.email)}','nama',this.value)"><small style="overflow:hidden;text-overflow:ellipsis">${esc(m.email)}</small>
@@ -618,7 +618,7 @@ const oSave=O=>{S.cfg.orang=O;saveCfg();rr()},oL=()=>PPL().map(o=>({nama:o.nama,
 function oSet(i,k,v){const O=oL();if(k=='nama'){v=String(v).trim();if(!v||O.some((o,j)=>j!=i&&o.nama==v))return rr()}O[i][k]=v;oSave(O);tt2('Daftar orang diperbarui')}
 function oAdd(){const n=$('on').value.trim();if(!n)return;const O=oL();if(O.some(o=>o.nama==n))return alert('Nama ini sudah ada.');O.push({nama:n,peran:$('op').value,admin:false,aktif:true,urut:O.length+1});S.cfg.pgw=(S.cfg.pgw||[]).filter(x=>x!=n);oSave(O)}
 function oDel(i){const O=oL();if(!confirm(`Hapus ${O[i].nama} dari daftar orang? (Lebih aman: hilangkan centang Aktif.) Namanya tetap ada di riwayat penugasan.`))return;O.splice(i,1);oSave(O)}
-async function akunBersama(){const u=$('bu').value.trim(),pw=$('bp').value;if(!/^[A-Za-z0-9._-]{3,30}$/.test(u))return alert('Nama pengguna 3–30 karakter: huruf, angka, titik, minus, atau garis bawah (tanpa spasi).');if(pw.length<8)return alert('Kata sandi minimal 8 karakter.');
+async function akunBersama(){const u=$('bu').value.trim(),pw=$('bp').value;if(!/^[A-Za-z0-9 ._-]{3,40}$/.test(u))return alert('Nama pengguna 3–40 karakter: huruf, angka, spasi, titik, minus, atau garis bawah.');if(pw.length<8)return alert('Kata sandi minimal 8 karakter.');
  const{error}=await sb.rpc('kwj_akun_bersama',{p_user:u,p_pass:pw});if(error)return alert('Gagal: '+error.message);$('bp').value='';await refresh();tt2(`Akun bersama "${u.toLowerCase()}" siap dipakai`)}
 async function mAdd(){const n=$('mn').value.trim(),e=$('me').value.trim().toLowerCase(),p=$('mp').value;if(!n||!/.+@.+\..+/.test(e))return alert('Isi nama dan email yang valid.');
  if(S.m.some(z=>z.email==e))return alert('Email ini sudah terdaftar.');const m={email:e,nama:n,peran:p,admin:false,aktif:true,urut:S.m.length+1};
