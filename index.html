@@ -235,7 +235,7 @@ srt=(a,b)=>String(a.tsm||'').localeCompare(String(b.tsm||''))||String(a.id).loca
 badge=st=>`<span class="st st-${st}" title="${KWD[st]}">${KWS[st]}</span>`,
 jsOf=L=>[...new Set([...(S.cfg.jp||[]),...L.map(x=>x.j)])].filter(j=>L.some(x=>x.j==j));
 // hak akses (diterapkan di tampilan; server membatasi hapus lewat RLS)
-const isMgr=()=>!!ME&&(ME.admin||ME.peran=='dalnis'),
+const isMgr=()=>!!ME&&(ME.admin||ME.peran=='dalnis'||ME.shared),
 canEdit=x=>isMgr()||x.kt==ME.nama||(x.cbn?x.cbn==ME.nama:x.cb==ME.email),
 canProg=x=>canEdit(x)||onTeam(x),
 canDel=x=>isMgr()||(x.cbn?x.cbn==ME.nama:x.cb==ME.email);
@@ -299,12 +299,12 @@ const go=t=>{tab=t;render()},rr=()=>{const y=scrollY;render();scrollTo(0,y)};
 function navR(){const my=S.t.filter(x=>x.st!='selesai'&&onTeam(x)).length,pd=S.t.filter(x=>x.st=='pending').length,
  bd={saya:[my,'#2f6e98','Penugasan aktif saya'],papan:[pd,'#e65100','Penugasan pending']};let n=0;
  $('nv').innerHTML=`<div class="brand"><span>👥 Korwas Jawa – Bali</span><button class="tg" onclick="sbT()" title="${MINI?'Tampilkan':'Sembunyikan'} menu">${MINI?'»':'«'}</button></div>
- <div class="me-box"><b>${esc(ME.nama)}</b>${PERAN[ME.peran]||''}${ME.admin?' · admin':''}${ME.shared?`<br><span style="opacity:.8">🔑 akun bersama</span><br><a href="#" style="color:#ffd27a" onclick="gantiOrang();return false">Bukan kamu? Ganti orang</a>`:''}${DEMO?`<select onchange="asP(this.value)" title="Mode demo: lihat aplikasi sebagai anggota lain">${S.m.map(m=>`<option value="${esc(m.email)}" ${m.email==ME.email?'selected':''}>Lihat sebagai: ${esc(m.nama)}</option>`).join('')}</select>`:''}</div>`+
- NAV.map(([g,L])=>`<div class="grp">${g}</div>`+L.map(([k,ic,lb])=>{n++;const b=bd[k];return `<button class="ni ${tab==k?'on':''}" onclick="go('${k}')" title="${lb} (Alt+${n})"><span class="ic">${ic}</span><span class="lb">${lb}</span>${b&&b[0]?`<span class="bd" style="background:${b[1]}" title="${b[2]}">${b[0]}</span>`:''}</button>`}).join('')).join('')+
+ <div class="me-box"><b>${esc(ME.nama)}</b>${ME.shared?'':PERAN[ME.peran]||''}${ME.admin?' · admin':''}${ME.shared?`<br><span style="opacity:.8">🔑 akun tim</span>`:''}${DEMO?`<select onchange="asP(this.value)" title="Mode demo: lihat aplikasi sebagai anggota lain">${S.m.map(m=>`<option value="${esc(m.email)}" ${m.email==ME.email?'selected':''}>Lihat sebagai: ${esc(m.nama)}</option>`).join('')}</select>`:''}</div>`+
+ NAV.map(([g,L])=>[g,L.filter(x=>!(ME.shared&&x[0]=='saya'))]).map(([g,L])=>`<div class="grp">${g}</div>`+L.map(([k,ic,lb])=>{n++;const b=bd[k];return `<button class="ni ${tab==k?'on':''}" onclick="go('${k}')" title="${lb} (Alt+${n})"><span class="ic">${ic}</span><span class="lb">${lb}</span>${b&&b[0]?`<span class="bd" style="background:${b[1]}" title="${b[2]}">${b[0]}</span>`:''}</button>`}).join('')).join('')+
  `<div class="sp"></div><div class="foot">${PEND?`<button class="ni" onclick="refresh()" style="color:#ffd27a"><span class="ic">⟳</span><span class="lb">Ada pembaruan — muat</span></button>`:`<button class="ni" onclick="refresh()" title="Muat ulang data"><span class="ic">⟳</span><span class="lb">Muat ulang</span></button>`}
  <button class="ni" onclick="logout()"><span class="ic">⏏</span><span class="lb">${DEMO?'Keluar dari demo':'Keluar'}</span></button></div>`}
 const phd=(r='')=>`<div class="ph"><h1>${TTL[tab]}</h1>${r?`<div class="r">${r}</div>`:''}</div>`;
-const mob=()=>`<div class="mob">${NAV.flatMap(g=>g[1]).map(([k,ic,lb])=>`<button class="s" style="${tab==k?'background:var(--ink);color:#fff':''}" onclick="go('${k}')">${ic} ${lb}</button>`).join('')}</div>`;
+const mob=()=>`<div class="mob">${NAV.flatMap(g=>g[1]).filter(x=>!(ME.shared&&x[0]=='saya')).map(([k,ic,lb])=>`<button class="s" style="${tab==k?'background:var(--ink);color:#fff':''}" onclick="go('${k}')">${ic} ${lb}</button>`).join('')}</div>`;
 function render(){if(!LOADED)return;PEND=0;document.body.classList.add('app');document.body.classList.toggle('mini',MINI);navR();
  $('pgl').innerHTML=NAMES().map(x=>`<option value="${esc(x)}">`).join('');
  const nb=tab=='rekap'?'':`<button class="p" style="margin:0" onclick="tForm()">+ Penugasan masuk</button>`;
@@ -577,26 +577,21 @@ function rkPdf(){const{L,lbl}=rkData(),M=rkMx(L),d=new jspdf.jsPDF({unit:'mm',fo
 // =====================================================================
 // TIM & PENGATURAN
 // =====================================================================
-function atur(){const mg=isMgr(),M=S.m.slice().sort((a,b)=>(a.urut||0)-(b.urut||0)),O=PPL().slice().sort((a,b)=>(a.urut||0)-(b.urut||0)),acc=!DEMO&&!ME.shared;
+function atur(){const mg=isMgr(),M=S.m.slice().sort((a,b)=>(a.urut||0)-(b.urut||0)),O=PPL().slice().sort((a,b)=>(a.urut||0)-(b.urut||0)),acc=!DEMO&&!ME.shared&&ME.admin;
  return `<div class="g2"><div>
- <div class="card"><h2>Orang di tim & peran</h2><small style="color:var(--m)">Daftar ini yang muncul di pilihan dalnis/katim/anggota dan di layar "Siapa yang sedang memakai?". ${mg?'':'Hanya Korwas atau admin yang bisa mengubah daftar ini.'}</small>
- <div class="mrow h" style="grid-template-columns:2.4fr 120px 52px 52px 56px"><span>Nama</span><span>Peran</span><span>Admin</span><span>Aktif</span><span></span></div>
- ${O.map((m,i)=>`<div class="mrow" style="grid-template-columns:2.4fr 120px 52px 52px 56px"><input value="${esc(m.nama)}" ${mg?'':'disabled'} onchange="oSet(${i},'nama',this.value)">
+ <div class="card"><h2>Orang di tim & peran</h2><small style="color:var(--m)">Nama-nama yang muncul di pilihan dalnis, ketua tim, dan anggota saat mencatat penugasan, serta di Jadwal & beban tim. Tidak perlu akun — orang di sini tidak harus bisa masuk aplikasi.</small>
+ <div class="mrow h" style="grid-template-columns:2.4fr 140px 52px 56px"><span>Nama</span><span>Peran</span><span>Aktif</span><span></span></div>
+ ${O.map((m,i)=>`<div class="mrow" style="grid-template-columns:2.4fr 140px 52px 56px"><input value="${esc(m.nama)}" ${mg?'':'disabled'} onchange="oSet(${i},'nama',this.value)">
  <select ${mg?'':'disabled'} onchange="oSet(${i},'peran',this.value)">${Object.entries(PR3).map(([k,l])=>`<option value="${k}" ${m.peran==k?'selected':''}>${l}</option>`).join('')}</select>
- <input type="checkbox" ${m.admin?'checked':''} ${mg?'':'disabled'} onchange="oSet(${i},'admin',this.checked)"><input type="checkbox" ${m.aktif!==false?'checked':''} ${mg?'':'disabled'} onchange="oSet(${i},'aktif',this.checked)">
+ <input type="checkbox" ${m.aktif!==false?'checked':''} ${mg?'':'disabled'} onchange="oSet(${i},'aktif',this.checked)">
  ${mg&&m.nama!=ME.nama?`<button class="x" onclick="oDel(${i})">Hapus</button>`:'<span></span>'}</div>`).join('')}
  ${mg?`<div class="row" style="margin-top:8px"><input id="on" placeholder="Nama lengkap orang baru"><div style="flex:0 0 120px"><select id="op">${Object.entries(PR3).map(([k,l])=>`<option value="${k}" ${k=='anggota'?'selected':''}>${l}</option>`).join('')}</select></div><button class="s" onclick="oAdd()">Tambah</button></div>`:''}</div>
- ${acc?`<div class="card"><h2>🔑 Akun bersama tim</h2><small style="color:var(--m)">Satu nama pengguna + kata sandi untuk dipakai ramai-ramai, tanpa email. Setelah masuk, tiap orang memilih namanya sendiri. ${mg?'Isi lagi dengan nama pengguna yang sama untuk mengganti kata sandinya.':'Hanya Korwas atau admin yang bisa membuat atau mengganti kata sandi.'}</small>
- ${M.filter(m=>m.bersama).map(m=>`<div class="it"><b>${esc(unm(m.email))}</b> ${m.aktif?'<span class="st st-selesai">aktif</span>':'<span class="st st-pending">nonaktif</span>'} ${mg?`<button class="x" onclick="mSet('${esc(m.email)}','aktif',${!m.aktif})">${m.aktif?'Nonaktifkan':'Aktifkan'}</button>`:''}</div>`).join('')}
- ${mg?`<div class="row" style="margin-top:8px"><input id="bu" placeholder="Nama pengguna, mis. Korwas Jawa Bali" autocomplete="off" autocapitalize="none" spellcheck="false"><input id="bp" type="password" placeholder="Kata sandi (min. 8 karakter)" autocomplete="new-password"><button class="s" onclick="akunBersama()">Simpan</button></div>`:''}</div>
- <div class="card"><h2>Akun login pribadi</h2><small style="color:var(--m)">Opsional — untuk yang ingin masuk dengan email sendiri. Nama harus sama dengan nama di daftar orang di atas.</small>
- <div class="mrow h"><span>Nama</span><span>Email</span><span>Peran</span><span>Admin</span><span>Aktif</span><span></span></div>
- ${M.filter(m=>!m.bersama).map((m,i)=>`<div class="mrow"><input value="${esc(m.nama)}" ${mg?'':'disabled'} onchange="mSet('${esc(m.email)}','nama',this.value)"><small style="overflow:hidden;text-overflow:ellipsis">${esc(m.email)}</small>
- <select ${mg?'':'disabled'} onchange="mSet('${esc(m.email)}','peran',this.value)">${Object.entries(PR3).map(([k,l])=>`<option value="${k}" ${m.peran==k?'selected':''}>${l}</option>`).join('')}</select>
- <input type="checkbox" ${m.admin?'checked':''} ${mg?'':'disabled'} onchange="mSet('${esc(m.email)}','admin',this.checked)"><input type="checkbox" ${m.aktif?'checked':''} ${mg?'':'disabled'} onchange="mSet('${esc(m.email)}','aktif',this.checked)">
- ${mg&&m.email!=ME.email?`<button class="x" onclick="mDel('${esc(m.email)}')">Hapus</button>`:'<span></span>'}</div>`).join('')}
- ${mg?`<h3>Tambah anggota</h3><div class="row"><input id="mn" placeholder="Nama lengkap"><input id="me" type="email" placeholder="email login"><div style="flex:0 0 120px"><select id="mp">${Object.entries(PR3).map(([k,l])=>`<option value="${k}" ${k=='anggota'?'selected':''}>${l}</option>`).join('')}</select></div><button class="s" onclick="mAdd()">Tambah</button></div>
- <small style="color:var(--m)">Setelah ditambahkan, minta yang bersangkutan membuka aplikasi dan memilih <b>Daftar akun</b> dengan email tersebut. Anggota nonaktif tidak bisa membuka data, tetapi namanya tetap ada di riwayat penugasan.</small>`:''}</div>
+ ${acc?`<div class="card" style="border-color:#c9d8e2"><h2>🔑 Akun masuk aplikasi</h2><small style="color:var(--m)">Khusus admin. Setiap akun di sini bisa masuk dan melihat serta mengubah seluruh data tim (data semua orang jadi satu). Isi lagi dengan nama pengguna yang sama untuk mengganti kata sandinya.</small>
+ <table class="wl" style="width:100%;border-collapse:collapse;margin-top:8px"><thead><tr><th>Nama pengguna</th><th>Jenis</th><th>Status</th><th></th></tr></thead><tbody>
+ ${M.map(m=>`<tr><td><b>${esc(m.bersama?String(m.nama).replace(/^Akun bersama \((.*)\)$/,'$1'):m.email)}</b></td><td>${m.bersama?'Akun tim':'Admin (email)'}</td><td>${m.aktif?'<span class="st st-selesai">aktif</span>':'<span class="st st-pending">nonaktif</span>'}</td>
+ <td style="text-align:right">${m.email!=ME.email?`<button class="x" style="color:var(--ink)" onclick="mSet('${esc(m.email)}','aktif',${!m.aktif})">${m.aktif?'Nonaktifkan':'Aktifkan'}</button>`:'<small class="mt">akunmu</small>'}</td></tr>`).join('')}</tbody></table>
+ <h3>Tambah akun / ganti kata sandi</h3><div class="row"><input id="bu" placeholder="Nama pengguna, mis. Korwas Jawa Bali" autocomplete="off" autocapitalize="none" spellcheck="false"><input id="bp" type="password" placeholder="Kata sandi (min. 8 karakter)" autocomplete="new-password"><button class="s" onclick="akunBersama()">Simpan</button></div>
+ <small style="color:var(--m)">Nama pengguna boleh berspasi dan tidak peka huruf besar/kecil. Akun yang dinonaktifkan langsung tidak bisa membuka data.</small></div>
  `:''}
  <div class="card"><h2>Pegawai di luar Korwas Jawa – Bali</h2><small style="color:var(--m)">Untuk penugasan lintas korwas. Nama di sini muncul di pilihan anggota tim, tetapi tidak punya akses aplikasi. Satu nama per baris. Nama baru yang diketik di formulir otomatis ditambahkan.</small>
  <textarea id="cpg" rows="5" style="margin-top:8px">${esc((S.cfg.pgw||[]).join('\n'))}</textarea><button class="s" style="margin-top:6px" onclick="S.cfg.pgw=splitN($('cpg').value);saveCfg();tt2('Tersimpan');rr()">Simpan daftar</button></div>
@@ -627,7 +622,7 @@ async function mDel(e){const m=S.m.find(z=>z.email==e);if(!confirm(`Hapus ${m.na
 function hAdd(){const d=$('hd').value;if(!d)return;S.cfg.h={...H(),[d]:$('hk').value.trim()||'Libur'};saveCfg();rr()}
 function jdSave(){const jp=[],det={};document.querySelectorAll('.jdt').forEach(t=>{const l=splitN(t.value.replace(/,/g,'‚'));if(!l.length)return;const j=l[0].replace(/‚/g,',');if(jp.includes(j))return;jp.push(j);det[j]=l.slice(1).map(s=>s.replace(/‚/g,','))});
  if(!jp.length)return alert('Minimal satu jenis.');S.cfg.jp=jp;S.cfg.det=det;saveCfg();tt2('Jenis tersimpan');rr()}
-const setupHelp=(short)=>short?`<ol style="font-size:14px;padding-left:20px"><li><b>Cara paling mudah:</b> bagikan nama pengguna + kata sandi akun bersama. Orang baru cukup ditambahkan di <b>Orang di tim & peran</b>.</li><li>Kalau ingin akun pribadi: tambahkan nama + email di <b>Akun login pribadi</b>, lalu yang bersangkutan memilih <b>Daftar akun</b> dengan email itu.</li></ol>`:
+const setupHelp=(short)=>short?`<ol style="font-size:14px;padding-left:20px"><li>Bagikan nama pengguna + kata sandi akun tim. Orang baru cukup ditambahkan di <b>Orang di tim & peran</b> supaya namanya bisa dipilih di penugasan.</li><li>Akun masuk baru hanya bisa dibuat admin di <b>🔑 Akun masuk aplikasi</b>.</li></ol>`:
  `<div class="card"><h2>Langkah memakai untuk tim sungguhan</h2><ol style="font-size:14px;padding-left:20px;margin:0">
  <li>Buka Supabase → SQL Editor, jalankan file <b>supabase-setup.sql</b> (di folder yang sama). Ganti dulu email tiap anggota di bagian bawah file.</li>
  <li>Pastikan Authentication → Providers → Email aktif dan pendaftaran (sign up) diizinkan.</li>
@@ -673,7 +668,7 @@ async function start(){$('v').innerHTML='<div class="card">Memuat data tim…</d
 // akun pribadi → identitas dari tabel akun; akun bersama → orangnya dipilih di perangkat ini
 function resolveMe(){const a=S.m.find(m=>m.email==EMAIL&&m.aktif);if(!a)return 'no';
  if(!a.bersama){const p=mBy(a.nama);ME={...(p||{}),...a,shared:false};return 'ok'}
- const p=MA().find(m=>m.nama==lsG('kwj_who'));if(!p){ME=null;return 'pick'}ME={...p,email:a.email,shared:true,akun:unm(a.email)};return 'ok'}
+ ME={nama:String(a.nama||'').replace(/^Akun bersama \((.*)\)$/,'$1')||unm(a.email),peran:'anggota',admin:false,email:a.email,shared:true,akun:unm(a.email)};if(tab=='saya')tab='dash';return 'ok'}
 function pilihOrang(){LOADED=false;document.body.classList.remove('app');$('nv').innerHTML='';
  $('v').innerHTML=`<div class="card"><h2>Siapa yang sedang memakai?</h2><small style="color:var(--m)">Kamu masuk dengan akun bersama tim. Pilih namamu supaya progres dan perubahan tercatat atas namamu. Pilihan ini diingat di perangkat ini.</small>
  <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">${MA().map(m=>`<button class="hr" onclick="pilihJadi('${esc(m.nama)}')"><span class="hic"><i class="who" style="padding:0;background:none"><i style="background:${clr(m.nama)};width:30px;height:30px;font-size:12px">${esc(ini(m.nama))}</i></i></span><span class="hbd"><b>${esc(m.nama)}</b><small>${PERAN[m.peran]||''}</small></span><span class="har">›</span></button>`).join('')}</div>
