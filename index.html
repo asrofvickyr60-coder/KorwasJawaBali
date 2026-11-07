@@ -201,11 +201,16 @@ KWS={pending:'Pending',proses:'Pelaksanaan',lapor:'Penyusunan laporan',selesai:'
 KWD={pending:'Surat sudah masuk, belum dilaksanakan',proses:'Sedang dilaksanakan (kantor / dinas luar)',lapor:'Pelaksanaan selesai, laporan belum terbit',selesai:'Laporan sudah terbit / penugasan tuntas'},
 KWN={pending:['proses','▶ Mulai pelaksanaan'],proses:['lapor','📝 Pelaksanaan selesai → susun laporan'],lapor:['selesai','✓ Laporan terbit / selesai']};
 const PERAN={dalnis:'Pengendali teknis (Korwas)',katim:'Ketua tim',anggota:'Anggota tim'},PR3={dalnis:'Dalnis',katim:'Katim',anggota:'Anggota'};
-const CFG0=()=>({jp:['Audit','Reviu','Evaluasi','Pemantauan','Pengawasan lainnya'],det:{Audit:['ADTT']},pgw:[],h:{}});
+const ORANG0=[['I Made Parindra Wibawa','dalnis',1],['Henny Realita Purba','katim',0],['Danang Indrapraja','katim',0],['Rullyta Sari','katim',0],['Asrof Vicky Ramdhani','anggota',1],['Talitha Puspa Melati','anggota',0]].map(([nama,peran,admin],i)=>({nama,peran,admin:!!admin,aktif:true,urut:i+1}));
+const CFG0=()=>({jp:['Audit','Reviu','Evaluasi','Pemantauan','Pengawasan lainnya'],det:{Audit:['ADTT']},pgw:[],h:{},orang:ORANG0.map(o=>({...o}))});
+// login dengan nama pengguna: diubah menjadi alamat internal (tidak pernah dikirimi email)
+const UDOM='korwasjabal.tim',toEmail=u=>{u=String(u||'').trim().toLowerCase();return u.includes('@')?u:u+'@'+UDOM},unm=e=>String(e||'').endsWith('@'+UDOM)?e.split('@')[0]:e;
 
 // ---------- ORANG ----------
-const MA=()=>S.m.filter(m=>m.aktif).sort((a,b)=>(a.urut||0)-(b.urut||0)),
-mBy=n=>S.m.find(m=>m.nama==n),isLuar=n=>!mBy(n),
+// daftar orang di tim (siapa saja yang bisa dipilih sebagai dalnis/katim/anggota) — disimpan bersama di pengaturan
+const PPL=()=>(S.cfg.orang&&S.cfg.orang.length?S.cfg.orang:S.m.filter(m=>!m.bersama)),
+MA=()=>PPL().filter(m=>m.aktif!==false).sort((a,b)=>(a.urut||0)-(b.urut||0)),
+mBy=n=>PPL().find(m=>m.nama==n),isLuar=n=>!mBy(n),
 NAMES=()=>[...new Set([...MA().map(m=>m.nama),...(S.cfg.pgw||[])])],
 defDal=()=>(MA().find(m=>m.peran=='dalnis')||{}).nama||'',
 KATIM=()=>MA().filter(m=>m.peran=='katim').map(m=>m.nama);
@@ -231,9 +236,9 @@ badge=st=>`<span class="st st-${st}" title="${KWD[st]}">${KWS[st]}</span>`,
 jsOf=L=>[...new Set([...(S.cfg.jp||[]),...L.map(x=>x.j)])].filter(j=>L.some(x=>x.j==j));
 // hak akses (diterapkan di tampilan; server membatasi hapus lewat RLS)
 const isMgr=()=>!!ME&&(ME.admin||ME.peran=='dalnis'),
-canEdit=x=>isMgr()||x.kt==ME.nama||x.cb==ME.email,
+canEdit=x=>isMgr()||x.kt==ME.nama||(x.cbn?x.cbn==ME.nama:x.cb==ME.email),
 canProg=x=>canEdit(x)||onTeam(x),
-canDel=x=>isMgr()||x.cb==ME.email;
+canDel=x=>isMgr()||(x.cbn?x.cbn==ME.nama:x.cb==ME.email);
 const selSt=x=>canEdit(x)?`<select class="st st-${x.st}" onchange="setSt('${x.id}',this.value)" title="Ubah status">${KWO.map(s=>`<option value="${s}" ${x.st==s?'selected':''}>${KWS[s]}</option>`).join('')}</select>`:badge(x.st);
 
 // =====================================================================
@@ -275,10 +280,10 @@ function live(){if(DEMO||!sb||CH)return;
   const r=p.new,i=S.t.findIndex(x=>x.id==r.id);if(i>=0&&S.t[i]._v==r.updated_at)return;
   i>=0?S.t[i]=fromRow(r):S.t.push(fromRow(r));if(r.updated_by&&r.updated_by!=ME.nama)tt2('Diperbarui oleh '+r.updated_by);soft()})
  .on('postgres_changes',{event:'*',schema:'public',table:'kwj_config'},p=>{if(p.new?.k=='dir'){S.cfg={...CFG0(),...p.new.data};soft()}})
- .on('postgres_changes',{event:'*',schema:'public',table:'kwj_anggota'},async()=>{const r=await sb.from('kwj_anggota').select('*');if(r.data){S.m=r.data.map(m=>({...m,email:m.email.toLowerCase()}));ME=S.m.find(m=>m.email==EMAIL)||ME;soft()}})
+ .on('postgres_changes',{event:'*',schema:'public',table:'kwj_anggota'},async()=>{const r=await sb.from('kwj_anggota').select('*');if(r.data){S.m=r.data.map(m=>({...m,email:m.email.toLowerCase()}));resolveMe();soft()}})
  .subscribe()}
 const soft=()=>{const a=document.activeElement;if($('ov').innerHTML||(a&&$('v').contains(a)&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))){PEND=1;navR();return}PEND=0;rr()};
-async function refresh(){tt('Memuat ulang…');try{await loadAll();if(!DEMO)ME=S.m.find(m=>m.email==EMAIL)||ME}catch(e){alert('Gagal memuat: '+e.message)}PEND=0;tt('');rr()}
+async function refresh(){tt('Memuat ulang…');try{await loadAll();if(!DEMO){const r=resolveMe();if(r=='no')return notMember();if(r=='pick')return pilihOrang()}}catch(e){alert('Gagal memuat: '+e.message)}PEND=0;tt('');rr()}
 
 // =====================================================================
 // MENU & RENDER
@@ -294,7 +299,7 @@ const go=t=>{tab=t;render()},rr=()=>{const y=scrollY;render();scrollTo(0,y)};
 function navR(){const my=S.t.filter(x=>x.st!='selesai'&&onTeam(x)).length,pd=S.t.filter(x=>x.st=='pending').length,
  bd={saya:[my,'#2f6e98','Penugasan aktif saya'],papan:[pd,'#e65100','Penugasan pending']};let n=0;
  $('nv').innerHTML=`<div class="brand"><span>👥 Korwas Jawa – Bali</span><button class="tg" onclick="sbT()" title="${MINI?'Tampilkan':'Sembunyikan'} menu">${MINI?'»':'«'}</button></div>
- <div class="me-box"><b>${esc(ME.nama)}</b>${PERAN[ME.peran]}${ME.admin?' · admin':''}${DEMO?`<select onchange="asP(this.value)" title="Mode demo: lihat aplikasi sebagai anggota lain">${MA().map(m=>`<option value="${esc(m.email)}" ${m.email==ME.email?'selected':''}>Lihat sebagai: ${esc(m.nama)}</option>`).join('')}</select>`:''}</div>`+
+ <div class="me-box"><b>${esc(ME.nama)}</b>${PERAN[ME.peran]||''}${ME.admin?' · admin':''}${ME.shared?`<br><span style="opacity:.8">🔑 akun bersama</span><br><a href="#" style="color:#ffd27a" onclick="gantiOrang();return false">Bukan kamu? Ganti orang</a>`:''}${DEMO?`<select onchange="asP(this.value)" title="Mode demo: lihat aplikasi sebagai anggota lain">${S.m.map(m=>`<option value="${esc(m.email)}" ${m.email==ME.email?'selected':''}>Lihat sebagai: ${esc(m.nama)}</option>`).join('')}</select>`:''}</div>`+
  NAV.map(([g,L])=>`<div class="grp">${g}</div>`+L.map(([k,ic,lb])=>{n++;const b=bd[k];return `<button class="ni ${tab==k?'on':''}" onclick="go('${k}')" title="${lb} (Alt+${n})"><span class="ic">${ic}</span><span class="lb">${lb}</span>${b&&b[0]?`<span class="bd" style="background:${b[1]}" title="${b[2]}">${b[0]}</span>`:''}</button>`}).join('')).join('')+
  `<div class="sp"></div><div class="foot">${PEND?`<button class="ni" onclick="refresh()" style="color:#ffd27a"><span class="ic">⟳</span><span class="lb">Ada pembaruan — muat</span></button>`:`<button class="ni" onclick="refresh()" title="Muat ulang data"><span class="ic">⟳</span><span class="lb">Muat ulang</span></button>`}
  <button class="ni" onclick="logout()"><span class="ic">⏏</span><span class="lb">${DEMO?'Keluar dari demo':'Keluar'}</span></button></div>`}
@@ -572,16 +577,27 @@ function rkPdf(){const{L,lbl}=rkData(),M=rkMx(L),d=new jspdf.jsPDF({unit:'mm',fo
 // =====================================================================
 // TIM & PENGATURAN
 // =====================================================================
-function atur(){const mg=isMgr(),M=S.m.slice().sort((a,b)=>(a.urut||0)-(b.urut||0));
+function atur(){const mg=isMgr(),M=S.m.slice().sort((a,b)=>(a.urut||0)-(b.urut||0)),O=PPL().slice().sort((a,b)=>(a.urut||0)-(b.urut||0)),acc=!DEMO&&!ME.shared;
  return `<div class="g2"><div>
- <div class="card"><h2>Anggota tim & peran</h2><small style="color:var(--m)">Email harus sama dengan email yang dipakai untuk masuk. ${mg?'Perubahan langsung berlaku untuk seluruh tim.':'Hanya Korwas atau admin yang bisa mengubah daftar ini.'}</small>
+ <div class="card"><h2>Orang di tim & peran</h2><small style="color:var(--m)">Daftar ini yang muncul di pilihan dalnis/katim/anggota dan di layar "Siapa yang sedang memakai?". ${mg?'':'Hanya Korwas atau admin yang bisa mengubah daftar ini.'}</small>
+ <div class="mrow h" style="grid-template-columns:2.4fr 120px 52px 52px 56px"><span>Nama</span><span>Peran</span><span>Admin</span><span>Aktif</span><span></span></div>
+ ${O.map((m,i)=>`<div class="mrow" style="grid-template-columns:2.4fr 120px 52px 52px 56px"><input value="${esc(m.nama)}" ${mg?'':'disabled'} onchange="oSet(${i},'nama',this.value)">
+ <select ${mg?'':'disabled'} onchange="oSet(${i},'peran',this.value)">${Object.entries(PR3).map(([k,l])=>`<option value="${k}" ${m.peran==k?'selected':''}>${l}</option>`).join('')}</select>
+ <input type="checkbox" ${m.admin?'checked':''} ${mg?'':'disabled'} onchange="oSet(${i},'admin',this.checked)"><input type="checkbox" ${m.aktif!==false?'checked':''} ${mg?'':'disabled'} onchange="oSet(${i},'aktif',this.checked)">
+ ${mg&&m.nama!=ME.nama?`<button class="x" onclick="oDel(${i})">Hapus</button>`:'<span></span>'}</div>`).join('')}
+ ${mg?`<div class="row" style="margin-top:8px"><input id="on" placeholder="Nama lengkap orang baru"><div style="flex:0 0 120px"><select id="op">${Object.entries(PR3).map(([k,l])=>`<option value="${k}" ${k=='anggota'?'selected':''}>${l}</option>`).join('')}</select></div><button class="s" onclick="oAdd()">Tambah</button></div>`:''}</div>
+ ${acc?`<div class="card"><h2>🔑 Akun bersama tim</h2><small style="color:var(--m)">Satu nama pengguna + kata sandi untuk dipakai ramai-ramai, tanpa email. Setelah masuk, tiap orang memilih namanya sendiri. ${mg?'Isi lagi dengan nama pengguna yang sama untuk mengganti kata sandinya.':'Hanya Korwas atau admin yang bisa membuat atau mengganti kata sandi.'}</small>
+ ${M.filter(m=>m.bersama).map(m=>`<div class="it"><b>${esc(unm(m.email))}</b> ${m.aktif?'<span class="st st-selesai">aktif</span>':'<span class="st st-pending">nonaktif</span>'} ${mg?`<button class="x" onclick="mSet('${esc(m.email)}','aktif',${!m.aktif})">${m.aktif?'Nonaktifkan':'Aktifkan'}</button>`:''}</div>`).join('')}
+ ${mg?`<div class="row" style="margin-top:8px"><input id="bu" placeholder="Nama pengguna, mis. korwasjabal" autocomplete="off" autocapitalize="none" spellcheck="false"><input id="bp" type="password" placeholder="Kata sandi (min. 8 karakter)" autocomplete="new-password"><button class="s" onclick="akunBersama()">Simpan</button></div>`:''}</div>
+ <div class="card"><h2>Akun login pribadi</h2><small style="color:var(--m)">Opsional — untuk yang ingin masuk dengan email sendiri. Nama harus sama dengan nama di daftar orang di atas.</small>
  <div class="mrow h"><span>Nama</span><span>Email</span><span>Peran</span><span>Admin</span><span>Aktif</span><span></span></div>
- ${M.map((m,i)=>`<div class="mrow"><input value="${esc(m.nama)}" ${mg?'':'disabled'} onchange="mSet('${esc(m.email)}','nama',this.value)"><small style="overflow:hidden;text-overflow:ellipsis">${esc(m.email)}</small>
+ ${M.filter(m=>!m.bersama).map((m,i)=>`<div class="mrow"><input value="${esc(m.nama)}" ${mg?'':'disabled'} onchange="mSet('${esc(m.email)}','nama',this.value)"><small style="overflow:hidden;text-overflow:ellipsis">${esc(m.email)}</small>
  <select ${mg?'':'disabled'} onchange="mSet('${esc(m.email)}','peran',this.value)">${Object.entries(PR3).map(([k,l])=>`<option value="${k}" ${m.peran==k?'selected':''}>${l}</option>`).join('')}</select>
  <input type="checkbox" ${m.admin?'checked':''} ${mg?'':'disabled'} onchange="mSet('${esc(m.email)}','admin',this.checked)"><input type="checkbox" ${m.aktif?'checked':''} ${mg?'':'disabled'} onchange="mSet('${esc(m.email)}','aktif',this.checked)">
  ${mg&&m.email!=ME.email?`<button class="x" onclick="mDel('${esc(m.email)}')">Hapus</button>`:'<span></span>'}</div>`).join('')}
  ${mg?`<h3>Tambah anggota</h3><div class="row"><input id="mn" placeholder="Nama lengkap"><input id="me" type="email" placeholder="email login"><div style="flex:0 0 120px"><select id="mp">${Object.entries(PR3).map(([k,l])=>`<option value="${k}" ${k=='anggota'?'selected':''}>${l}</option>`).join('')}</select></div><button class="s" onclick="mAdd()">Tambah</button></div>
  <small style="color:var(--m)">Setelah ditambahkan, minta yang bersangkutan membuka aplikasi dan memilih <b>Daftar akun</b> dengan email tersebut. Anggota nonaktif tidak bisa membuka data, tetapi namanya tetap ada di riwayat penugasan.</small>`:''}</div>
+ `:''}
  <div class="card"><h2>Pegawai di luar Korwas Jawa – Bali</h2><small style="color:var(--m)">Untuk penugasan lintas korwas. Nama di sini muncul di pilihan anggota tim, tetapi tidak punya akses aplikasi. Satu nama per baris. Nama baru yang diketik di formulir otomatis ditambahkan.</small>
  <textarea id="cpg" rows="5" style="margin-top:8px">${esc((S.cfg.pgw||[]).join('\n'))}</textarea><button class="s" style="margin-top:6px" onclick="S.cfg.pgw=splitN($('cpg').value);saveCfg();tt2('Tersimpan');rr()">Simpan daftar</button></div>
  <div class="card"><h2>Hari libur</h2><div class="row"><div style="flex:0 0 170px"><input type="date" id="hd"></div><input id="hk" placeholder="Keterangan, mis. Cuti bersama"><button class="s" onclick="hAdd()">Tambah</button></div>
@@ -591,21 +607,27 @@ function atur(){const mg=isMgr(),M=S.m.slice().sort((a,b)=>(a.urut||0)-(b.urut||
  <div id="jdl">${S.cfg.jp.map(j=>`<textarea rows="3" class="jdt" style="margin-top:8px">${esc([j,...(S.cfg.det[j]||[])].join('\n'))}</textarea>`).join('')}</div>
  <button class="s" style="margin-top:6px" onclick="$('jdl').insertAdjacentHTML('beforeend','<textarea rows=3 class=jdt style=margin-top:8px placeholder=&quot;Jenis baru (baris 1), lalu detailnya&quot;></textarea>')">+ Jenis</button> <button class="s" onclick="jdSave()">Simpan jenis</button></div>
  <div class="card"><h2>Data</h2><button class="s" onclick="xlAll()">📊 Ekspor semua penugasan (Excel)</button> <button class="s" onclick="dlf(new Blob([JSON.stringify({t:S.t.map(strip),cfg:S.cfg,m:S.m},null,1)],{type:'application/json'}),'backup-korwas-jabal-'+tgl()+'.json')">💾 Backup JSON</button>
- ${DEMO?`<div style="margin-top:10px"><button class="x" onclick="if(confirm('Kembalikan data demo ke contoh awal?')){lsS('kwj_demo',null);refresh()}">↺ Reset data demo</button></div>`:
+ ${DEMO?`<div style="margin-top:10px"><button class="x" onclick="if(confirm('Kembalikan data demo ke contoh awal?')){lsS('kwj_demo',null);refresh()}">↺ Reset data demo</button></div>`:ME.shared?'':
  `<h3>Impor dari Work Tracker pribadi</h3><small style="color:var(--m)">Mengambil isi menu <b>Penugasan tim</b> (dan, bila dipilih, penugasan pengawasan) dari Work Tracker pribadi akun yang sedang masuk. File lampiran tidak ikut — gunakan link folder bersama.</small><br><button class="s" style="margin-top:6px" onclick="impOpen()">⤵ Pilih penugasan untuk diimpor</button>`}</div>
- ${DEMO?setupHelp():`<details style="background:var(--c)"><summary>Cara menambah anggota baru</summary>${setupHelp(1)}</details>`}
+ ${DEMO?setupHelp():`<details style="background:var(--c)"><summary>Cara menambah orang baru</summary>${setupHelp(1)}</details>`}
  </div></div>`}
 async function mSet(email,k,v){const m={...S.m.find(z=>z.email==email)};m[k]=k=='nama'?String(v).trim():v;if(k=='nama'&&!m.nama)return rr();
  if(k=='aktif'&&!v&&email==ME.email&&!confirm('Menonaktifkan akunmu sendiri akan menutup aksesmu. Lanjutkan?'))return rr();
  if(await saveM(m)){Object.assign(S.m.find(z=>z.email==email),m);if(email==ME.email)ME=S.m.find(z=>z.email==email);tt2('Anggota diperbarui')}rr()}
+const oSave=O=>{S.cfg.orang=O;saveCfg();rr()},oL=()=>PPL().map(o=>({nama:o.nama,peran:o.peran,admin:!!o.admin,aktif:o.aktif!==false,urut:o.urut||0})).sort((a,b)=>a.urut-b.urut);
+function oSet(i,k,v){const O=oL();if(k=='nama'){v=String(v).trim();if(!v||O.some((o,j)=>j!=i&&o.nama==v))return rr()}O[i][k]=v;oSave(O);tt2('Daftar orang diperbarui')}
+function oAdd(){const n=$('on').value.trim();if(!n)return;const O=oL();if(O.some(o=>o.nama==n))return alert('Nama ini sudah ada.');O.push({nama:n,peran:$('op').value,admin:false,aktif:true,urut:O.length+1});S.cfg.pgw=(S.cfg.pgw||[]).filter(x=>x!=n);oSave(O)}
+function oDel(i){const O=oL();if(!confirm(`Hapus ${O[i].nama} dari daftar orang? (Lebih aman: hilangkan centang Aktif.) Namanya tetap ada di riwayat penugasan.`))return;O.splice(i,1);oSave(O)}
+async function akunBersama(){const u=$('bu').value.trim(),pw=$('bp').value;if(!/^[A-Za-z0-9._-]{3,30}$/.test(u))return alert('Nama pengguna 3–30 karakter: huruf, angka, titik, minus, atau garis bawah (tanpa spasi).');if(pw.length<8)return alert('Kata sandi minimal 8 karakter.');
+ const{error}=await sb.rpc('kwj_akun_bersama',{p_user:u,p_pass:pw});if(error)return alert('Gagal: '+error.message);$('bp').value='';await refresh();tt2(`Akun bersama "${u.toLowerCase()}" siap dipakai`)}
 async function mAdd(){const n=$('mn').value.trim(),e=$('me').value.trim().toLowerCase(),p=$('mp').value;if(!n||!/.+@.+\..+/.test(e))return alert('Isi nama dan email yang valid.');
  if(S.m.some(z=>z.email==e))return alert('Email ini sudah terdaftar.');const m={email:e,nama:n,peran:p,admin:false,aktif:true,urut:S.m.length+1};
- if(await saveM(m)){if(!DEMO)S.m.push(m);S.cfg.pgw=(S.cfg.pgw||[]).filter(x=>x!=n);tt2('Anggota ditambahkan');rr()}}
+ if(await saveM(m)){if(!DEMO)S.m.push(m);S.cfg.pgw=(S.cfg.pgw||[]).filter(x=>x!=n);if(!PPL().some(o=>o.nama==n)){S.cfg.orang=[...oL(),{nama:n,peran:p,admin:false,aktif:true,urut:oL().length+1}]}saveCfg();tt2('Anggota ditambahkan');rr()}}
 async function mDel(e){const m=S.m.find(z=>z.email==e);if(!confirm(`Hapus ${m.nama} dari tim? (Lebih aman: nonaktifkan saja.)`))return;if(await delM(e)){if(!DEMO)S.m=S.m.filter(z=>z.email!=e);rr()}}
 function hAdd(){const d=$('hd').value;if(!d)return;S.cfg.h={...H(),[d]:$('hk').value.trim()||'Libur'};saveCfg();rr()}
 function jdSave(){const jp=[],det={};document.querySelectorAll('.jdt').forEach(t=>{const l=splitN(t.value.replace(/,/g,'‚'));if(!l.length)return;const j=l[0].replace(/‚/g,',');if(jp.includes(j))return;jp.push(j);det[j]=l.slice(1).map(s=>s.replace(/‚/g,','))});
  if(!jp.length)return alert('Minimal satu jenis.');S.cfg.jp=jp;S.cfg.det=det;saveCfg();tt2('Jenis tersimpan');rr()}
-const setupHelp=(short)=>short?`<ol style="font-size:14px;padding-left:20px"><li>Korwas/admin menambahkan nama + email di <b>Anggota tim & peran</b>.</li><li>Yang bersangkutan membuka link aplikasi → <b>Daftar akun</b> dengan email itu → konfirmasi email (jika diminta) → masuk.</li></ol>`:
+const setupHelp=(short)=>short?`<ol style="font-size:14px;padding-left:20px"><li><b>Cara paling mudah:</b> bagikan nama pengguna + kata sandi akun bersama. Orang baru cukup ditambahkan di <b>Orang di tim & peran</b>.</li><li>Kalau ingin akun pribadi: tambahkan nama + email di <b>Akun login pribadi</b>, lalu yang bersangkutan memilih <b>Daftar akun</b> dengan email itu.</li></ol>`:
  `<div class="card"><h2>Langkah memakai untuk tim sungguhan</h2><ol style="font-size:14px;padding-left:20px;margin:0">
  <li>Buka Supabase → SQL Editor, jalankan file <b>supabase-setup.sql</b> (di folder yang sama). Ganti dulu email tiap anggota di bagian bawah file.</li>
  <li>Pastikan Authentication → Providers → Email aktif dan pendaftaran (sign up) diizinkan.</li>
@@ -646,21 +668,32 @@ async function boot(){LOADED=false;ME=null;document.body.classList.remove('app')
 async function start(){$('v').innerHTML='<div class="card">Memuat data tim…</div>';
  try{await loadAll()}catch(e){return loadErr(e)}
  if(DEMO)ME=S.m.find(m=>m.email==lsG('kwj_as'))||S.m.find(m=>m.nama.startsWith('Asrof'))||S.m[0];
- else{ME=S.m.find(m=>m.email==EMAIL&&m.aktif);if(!ME)return notMember()}
+ else{const r=resolveMe();if(r=='no')return notMember();if(r=='pick')return pilihOrang()}
  LOADED=true;live();render()}
+// akun pribadi → identitas dari tabel akun; akun bersama → orangnya dipilih di perangkat ini
+function resolveMe(){const a=S.m.find(m=>m.email==EMAIL&&m.aktif);if(!a)return 'no';
+ if(!a.bersama){const p=mBy(a.nama);ME={...(p||{}),...a,shared:false};return 'ok'}
+ const p=MA().find(m=>m.nama==lsG('kwj_who'));if(!p){ME=null;return 'pick'}ME={...p,email:a.email,shared:true,akun:unm(a.email)};return 'ok'}
+function pilihOrang(){LOADED=false;document.body.classList.remove('app');$('nv').innerHTML='';
+ $('v').innerHTML=`<div class="card"><h2>Siapa yang sedang memakai?</h2><small style="color:var(--m)">Kamu masuk dengan akun bersama tim. Pilih namamu supaya progres dan perubahan tercatat atas namamu. Pilihan ini diingat di perangkat ini.</small>
+ <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">${MA().map(m=>`<button class="hr" onclick="pilihJadi('${esc(m.nama)}')"><span class="hic"><i class="who" style="padding:0;background:none"><i style="background:${clr(m.nama)};width:30px;height:30px;font-size:12px">${esc(ini(m.nama))}</i></i></span><span class="hbd"><b>${esc(m.nama)}</b><small>${PERAN[m.peran]||''}</small></span><span class="har">›</span></button>`).join('')}</div>
+ <button class="x" style="color:var(--m);margin-top:12px" onclick="logout()">Keluar</button></div>`}
+const pilihJadi=n=>{lsS('kwj_who',n);resolveMe();LOADED=true;live();tab='saya';render();tt2('Halo, '+n.split(' ')[0]+'!')},
+gantiOrang=()=>{lsS('kwj_who',null);if(CH){sb.removeChannel(CH);CH=null}pilihOrang()};
 const asP=e=>{lsS('kwj_as',e);ME=S.m.find(m=>m.email==e);tt2('Sekarang melihat sebagai '+ME.nama+' ('+PR3[ME.peran]+')');render()};
 async function logout(){if(DEMO){lsS('kwj_mode',null);return boot()}if(CH){sb.removeChannel(CH);CH=null}await sb.auth.signOut();boot()}
 function loadErr(e){const m=e?.message||String(e),miss=/does not exist|schema cache|could not find the table/i.test(m);
  $('v').innerHTML=`<div class="card" style="border-color:#f0c9c5"><h2>${miss?'Tabel tim belum dibuat':'Data belum bisa dimuat'}</h2><div>${esc(m)}</div>${miss?`<p style="font-size:14px">Jalankan <b>supabase-setup.sql</b> di Supabase → SQL Editor, lalu muat ulang halaman ini.</p>`:'<p style="color:var(--m);font-size:14px">Periksa koneksi internet, lalu coba lagi.</p>'}<button class="p" onclick="boot()">Coba lagi</button> <button class="s" onclick="logout()">Keluar</button> <button class="s" onclick="demo()">Coba mode demo</button></div>`}
-function notMember(){$('v').innerHTML=`<div class="card"><h2>Akun belum terdaftar di tim</h2><p>Kamu masuk sebagai <b>${esc(EMAIL)}</b>, tetapi email ini belum terdaftar (atau sedang nonaktif) di Korwas Jawa – Bali.</p><p style="color:var(--m);font-size:14px">Minta Korwas atau admin menambahkan email ini di menu Tim & pengaturan, lalu muat ulang.</p><button class="p" onclick="boot()">Muat ulang</button> <button class="s" onclick="logout()">Keluar</button></div>`}
+function notMember(){$('v').innerHTML=`<div class="card"><h2>Akun belum terdaftar di tim</h2><p>Kamu masuk sebagai <b>${esc(unm(EMAIL))}</b>, tetapi email ini belum terdaftar (atau sedang nonaktif) di Korwas Jawa – Bali.</p><p style="color:var(--m);font-size:14px">Minta Korwas atau admin menambahkan email ini di menu Tim & pengaturan, lalu muat ulang.</p><button class="p" onclick="boot()">Muat ulang</button> <button class="s" onclick="logout()">Keluar</button></div>`}
 function login(m='',mode='in'){$('v').innerHTML=`<div class="card"><h2 style="margin-bottom:2px">👥 Work Tracker Korwas Jawa – Bali</h2><small style="color:var(--m)">Penugasan bersama tim: Korwas, ketua tim, dan anggota.</small>
- <label>Email</label><input id="em" type="email" autocomplete="username"><label>Kata sandi${mode=='up'?' (minimal 6 karakter)':''}</label><input id="pw" type="password" autocomplete="${mode=='up'?'new-password':'current-password'}" onkeydown="if(event.key=='Enter')auth('${mode}')">
+ <label>${mode=='up'?'Email':'Nama pengguna atau email'}</label><input id="em" type="${mode=='up'?'email':'text'}" autocomplete="username" autocapitalize="none" spellcheck="false"><label>Kata sandi${mode=='up'?' (minimal 6 karakter)':''}</label><input id="pw" type="password" autocomplete="${mode=='up'?'new-password':'current-password'}" onkeydown="if(event.key=='Enter')auth('${mode}')">
  <button class="p" onclick="auth('${mode}')">${mode=='up'?'Daftar akun':'Masuk'}</button> <button class="x" style="color:var(--ink);margin-top:14px" onclick="login('','${mode=='up'?'in':'up'}')">${mode=='up'?'Sudah punya akun? Masuk':'Belum punya akun? Daftar'}</button>
  <div style="color:${/cek email|berhasil/i.test(m)?'var(--teal)':'var(--red)'};margin-top:8px">${esc(m)}</div>
  <div class="sec" style="margin-top:18px"><small style="color:var(--m)">Belum ada tabel/akun? Coba dulu dengan data contoh:</small><br><button class="s" style="margin-top:6px" onclick="demo()">🧪 Coba mode demo</button></div></div>`}
-async function auth(mode){const c={email:$('em').value.trim(),password:$('pw').value};if(!sb)return;
+async function auth(mode){const c={email:toEmail($('em').value),password:$('pw').value};if(!sb)return;
+ if(mode=='up'&&c.email.endsWith('@'+UDOM))return login('Untuk mendaftar gunakan alamat email. Akun bersama (nama pengguna) dibuat oleh admin di menu Tim & pengaturan.','up');
  if(mode=='up'){const{data,error}=await sb.auth.signUp(c);if(error)return login(error.message,'up');if(!data.session)return login('Pendaftaran berhasil. Cek email untuk konfirmasi, lalu masuk.','in');return boot()}
- const{error}=await sb.auth.signInWithPassword(c);if(error)return login(error.message);boot()}
+ const{error}=await sb.auth.signInWithPassword(c);if(error)return login(/invalid login/i.test(error.message)?'Nama pengguna/email atau kata sandi salah.':error.message);boot()}
 const demo=()=>{lsS('kwj_mode','demo');boot()};
 function seed(){const t=today(),a=n=>addD(t,n),rng=(s,n)=>{const o=[];let d=s;while(o.length<n){if(!we(d))o.push(d);d=addD(d,1)}return o},P=(by,dd,x,au)=>({id:nid(),tg:a(dd),x,by,a:au?1:0});
  const m=[['made@contoh.go.id','I Made Parindra Wibawa','dalnis',true],['henny@contoh.go.id','Henny Realita Purba','katim',false],['danang@contoh.go.id','Danang Indrapraja','katim',false],['rullyta@contoh.go.id','Rullyta Sari','katim',false],['asrof@contoh.go.id','Asrof Vicky Ramdhani','anggota',true],['talitha@contoh.go.id','Talitha Puspa Melati','anggota',false]].map(([email,nama,peran,admin],i)=>({email,nama,peran,admin,aktif:true,urut:i+1}));
