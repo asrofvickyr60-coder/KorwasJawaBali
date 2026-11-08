@@ -156,6 +156,32 @@ body.mini .me-box{display:none}
 .sec{border-top:1px solid var(--l);margin-top:14px;padding-top:4px}
 @media (max-width:900px){#nv{display:none}body.app main{margin-left:0}main{padding:14px}.dg2,.split,.kb,.g2{grid-template-columns:1fr}.kan{grid-template-columns:1fr}.mob{display:flex!important}}
 .mob{display:none;gap:6px;overflow-x:auto;margin:-4px 0 12px}.mob button{flex:0 0 auto}
+/* ---------- CATATAN TIM (dashboard) ---------- */
+.nb{background:#fff8d6;border:2px solid #f2d36b;border-radius:12px;padding:16px 20px;margin-bottom:16px}
+.nb h2{font-size:20px;color:#6b4e00;margin:0}.nb .hd{margin-bottom:8px}
+.nbi{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid #f0dd9a}.nbi:first-of-type{border-top:0}
+.nbi input[type=checkbox]{width:20px;height:20px;margin-top:3px;flex:none}.nbi .nx{flex:1;font-size:17px;font-weight:600;white-space:pre-line;color:#3d2e00}
+.nbi .nx small{display:block;font-size:12px;font-weight:400;color:#8a7230;margin-top:2px}.nbi.dn .nx{text-decoration:line-through;color:#9c8b55;font-weight:400;font-size:15px}
+.nbi .x{visibility:hidden}.nbi:hover .x{visibility:visible}
+.nb textarea{background:#fffdf3;font-size:15px}
+/* ---------- DAFTAR: detail jenis bisa diciutkan ---------- */
+.cl details.dj{margin:6px 0;padding:0;background:#fafaf8;border-color:var(--l)}
+.cl details.dj>summary{display:flex;align-items:center;gap:8px;padding:9px 12px;font-size:14px;font-weight:600;color:var(--ink)}
+.cl details.dj>summary .cnt{margin-left:auto;display:flex;gap:5px;flex-wrap:wrap;font-weight:400}
+.cl details.dj[open]>summary{border-bottom:1px solid var(--l)}.cl details.dj .tb{margin:0;background:#fff}
+.wk{display:inline-block;font-size:12.5px;border-radius:6px;padding:2px 7px;background:var(--soft);color:var(--ink);white-space:nowrap}
+.wk.w{background:#fff3e0;color:#8a4b00}.wk.hi{background:#fbe3e1;color:var(--red)}.wk.ok{background:#e3eef6;color:#1f4f73}
+/* ---------- PAPAN: kluster per jenis & detail ---------- */
+.pj{background:var(--c);border:1px solid var(--l);border-radius:10px;margin:0 0 12px;padding:0}
+.pj>summary,.pd>summary{display:grid;grid-template-columns:260px minmax(220px,1fr) 400px;gap:14px;align-items:center;padding:12px 14px}
+.pj>summary{font-size:15.5px}.pj .in{padding:0 12px 10px}
+.pd{margin:6px 0;padding:0;background:#fafaf8}.pd>summary{font-size:14px;font-weight:600;padding:9px 12px}.pd[open]>summary{border-bottom:1px solid var(--l)}
+.pd .kan{padding:10px}.pd .kcol{min-height:60px}
+.spb{display:flex;height:10px;border-radius:5px;overflow:hidden;background:#e3e8ec}.spb i{display:block;height:100%}
+.spb .pending{background:#e65100}.spb .proses{background:#2f6e98}.spb .lapor{background:#7b4bb0}.spb .selesai{background:#0f8b6d}
+.pgt{font-size:12.5px;color:var(--m);font-weight:400;margin-top:3px;display:block}
+.pnum{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;font-weight:400}
+@media (max-width:900px){.pj>summary,.pd>summary{grid-template-columns:1fr}.pnum{justify-content:flex-start}}
 </style></head><body>
 <nav id="nv"></nav><main id="v"></main><div id="ov"></div><datalist id="pgl"></datalist><div id="tt" style="position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 14px;border-radius:8px;display:none;z-index:50;font-size:14px"></div>
 <script>
@@ -239,6 +265,18 @@ const isMgr=()=>!!ME&&(ME.admin||ME.peran=='dalnis'||ME.shared),
 canEdit=x=>isMgr()||x.kt==ME.nama||(x.cbn?x.cbn==ME.nama:x.cb==ME.email),
 canProg=x=>canEdit(x)||onTeam(x),
 canDel=x=>isMgr()||(x.cbn?x.cbn==ME.nama:x.cb==ME.email);
+// kolom "Waktu" di daftar: pending → sejak surat masuk; pelaksanaan → hari ke-berapa / lewat; laporan → lewat dari hari terakhir; selesai → –
+const hkI=(a,b)=>a>b?0:(libur(a)?0:1)+hk(a,b),
+waktu=x=>{const t=today(),A=tAll(x),a0=A[0]||x.tm||'',a1=akhir(x);
+ if(x.st=='selesai')return '<span class="mt">–</span>';
+ if(x.st=='pending')return x.tsm?`<span class="wk ${umur(x)>20?'hi':umur(x)>5?'w':''}" title="Hari kerja sejak tanggal surat permohonan/masuk">${umur(x)} hari kerja</span><br><small style="color:var(--m)">sejak surat ${fd(x.tsm)}</small>`:'<span class="mt">tgl surat belum diisi</span>';
+ if(a1&&a1<t){const n=hk(a1,t);return `<span class="wk ${n>10?'hi':'w'}" title="Hari kerja sejak hari terakhir pelaksanaan">lewat ${n} hari kerja</span><br><small style="color:var(--m)">dari hari terakhir ${fd(a1)}</small>`}
+ if(x.st=='lapor')return a1?`<span class="wk ok">pelaksanaan s.d. ${fd(a1)}</span>`:'<span class="mt">tgl pelaksanaan belum diisi</span>';
+ if(!a0)return '<span class="mt">tgl pelaksanaan belum diisi</span>';
+ if(a0>t)return `<span class="wk">mulai ${hk(t,a0)} hari kerja lagi</span>`;
+ const ke=A.length?A.filter(d=>d<=t).length:hkI(a0,t);return `<span class="wk ok" title="Hari pelaksanaan yang sudah berjalan">hari ke-${ke}${A.length?' dari '+A.length:''}</span><br><small style="color:var(--m)">pelaksanaan</small>`},
+tglP=x=>{const A=tAll(x);if(!A.length)return x.tm?`<small>mulai ${fd(x.tm)}</small>`:'<span class="mt">—</span>';const dl=(x.dl||[]).length,dk=(x.dk||[]).length;
+ return `${A.length>1?fds(A[0])+' – '+fd(akhir(x)):fd(A[0])}<br><small style="color:var(--m)">${[dl?dl+' hr DL':'',dk?dk+' hr kantor':''].filter(Boolean).join(', ')}</small>`};
 const selSt=x=>canEdit(x)?`<select class="st st-${x.st}" onchange="setSt('${x.id}',this.value)" title="Ubah status">${KWO.map(s=>`<option value="${s}" ${x.st==s?'selected':''}>${KWS[s]}</option>`).join('')}</select>`:badge(x.st);
 
 // =====================================================================
@@ -247,12 +285,17 @@ const selSt=x=>canEdit(x)?`<select class="st st-${x.st}" onchange="setSt('${x.id
 const strip=x=>{const o={...x};delete o._v;delete o._by;return o},
 fromRow=r=>({...r.data,id:r.id,_v:r.updated_at,_by:r.updated_by});
 async function loadAll(){
- if(DEMO){S=lsG('kwj_demo')||seed();S.cfg={...CFG0(),...S.cfg};return}
+ if(DEMO){S=lsG('kwj_demo')||seed();S.cfg={...CFG0(),...S.cfg};S.nt=S.nt||[];return}
  const[a,t,c]=await Promise.all([sb.from('kwj_anggota').select('*'),sb.from('kwj_tugas').select('*'),sb.from('kwj_config').select('*')]);
  const e=a.error||t.error||c.error;if(e)throw e;
  S.m=a.data.map(m=>({...m,email:m.email.toLowerCase()}));S.t=t.data.map(fromRow);
- const dir=c.data.find(r=>r.k=='dir');S.cfg={...CFG0(),...(dir?dir.data:{})}}
-const demoSave=()=>lsS('kwj_demo',{t:S.t.map(strip),cfg:S.cfg,m:S.m});
+ const dir=c.data.find(r=>r.k=='dir');S.cfg={...CFG0(),...(dir?dir.data:{})};const nt=c.data.find(r=>r.k=='notes');S.nt=nt&&Array.isArray(nt.data?.L)?nt.data.L:[]}
+const demoSave=()=>lsS('kwj_demo',{t:S.t.map(strip),cfg:S.cfg,m:S.m,nt:S.nt||[]});
+// catatan tim di dashboard: baris tersendiri (k='notes'), diambil terbaru dulu supaya catatan orang lain tidak tertimpa
+async function ntMut(fn){if(DEMO){S.nt=S.nt||[];fn(S.nt);demoSave();return rr()}
+ const r=await sb.from('kwj_config').select('data').eq('k','notes').maybeSingle();if(r.error)return alert('Gagal memuat catatan: '+r.error.message);
+ const L=Array.isArray(r.data?.data?.L)?r.data.data.L:[];fn(L);
+ const{error}=await sb.from('kwj_config').upsert({k:'notes',data:{L},updated_by:ME.nama});if(error)return alert('Gagal menyimpan catatan: '+error.message);S.nt=L;rr()}
 async function putT(x,chk=true){x.ub=ME.nama;x.ua=new Date().toISOString();
  const put=()=>{const i=S.t.findIndex(z=>z.id==x.id);i>=0?S.t[i]=x:S.t.push(x)};
  if(DEMO){put();demoSave();return true}
@@ -279,7 +322,7 @@ function live(){if(DEMO||!sb||CH)return;
   if(p.eventType=='DELETE'){S.t=S.t.filter(x=>x.id!=p.old.id);return soft()}
   const r=p.new,i=S.t.findIndex(x=>x.id==r.id);if(i>=0&&S.t[i]._v==r.updated_at)return;
   i>=0?S.t[i]=fromRow(r):S.t.push(fromRow(r));if(r.updated_by&&r.updated_by!=ME.nama)tt2('Diperbarui oleh '+r.updated_by);soft()})
- .on('postgres_changes',{event:'*',schema:'public',table:'kwj_config'},p=>{if(p.new?.k=='dir'){S.cfg={...CFG0(),...p.new.data};soft()}})
+ .on('postgres_changes',{event:'*',schema:'public',table:'kwj_config'},p=>{if(p.new?.k=='dir'){S.cfg={...CFG0(),...p.new.data};soft()}if(p.new?.k=='notes'){S.nt=Array.isArray(p.new.data?.L)?p.new.data.L:[];if(p.new.updated_by&&p.new.updated_by!=ME.nama)tt2('Catatan tim diperbarui oleh '+p.new.updated_by);soft()}})
  .on('postgres_changes',{event:'*',schema:'public',table:'kwj_anggota'},async()=>{const r=await sb.from('kwj_anggota').select('*');if(r.data){S.m=r.data.map(m=>({...m,email:m.email.toLowerCase()}));resolveMe();soft()}})
  .subscribe()}
 const soft=()=>{const a=document.activeElement;if($('ov').innerHTML||(a&&$('v').contains(a)&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))){PEND=1;navR();return}PEND=0;rr()};
@@ -322,10 +365,19 @@ function dash(){const A=S.t,act=A.filter(x=>x.st!='selesai'),c=s=>A.filter(x=>x.
   ...LT.slice(0,4).map(x=>[x,`⏰ Lewat target ${fd(x.tgt)}`,true])];
  const strip=`<div class="stt" style="margin-bottom:14px">${KWO.map(s=>`<div style="cursor:pointer" onclick="DF.st='${s}';go('daftar')" title="${KWD[s]}"><small>${KWS[s]}</small><b class="st-${s}" style="background:none">${c(s)}</b></div>`).join('')}
   <div><small>Selesai tahun ${y}</small><b>${A.filter(x=>x.st=='selesai'&&String(x.ts||'').startsWith(y)).length}</b></div></div>`;
- return strip+`<div class="dg2"><div>
+ return notesB()+strip+`<div class="dg2"><div>
  <div class="card" ${att.length?'style="border-color:#f0c9c5"':''}><h2>Perlu perhatian (${att.length})</h2>${att.map(([x,m,hi])=>`<div class="it" style="cursor:pointer" onclick="tForm('${x.id}')"><div class="hd"><span><span class="tag">${esc(x.j)}</span> <b>${esc(x.dj||'')}</b></span>${badge(x.st)}</div><div style="margin:3px 0">${esc(String(x.rc).slice(0,120))}</div><span class="chip tl ${hi?'hi':''}" style="margin:0 0 4px">${m}</span><div>${timH(x)}</div></div>`).join('')||'<small class="mt">Tidak ada tunggakan yang perlu ditindaklanjuti ✓</small>'}</div>
  ${minggu()}</div>
  <div>${beban()}${aktivitas()}</div></div>`}
+let NTD=false;
+function notesB(){const L=(S.nt||[]).slice(),op=L.filter(n=>!n.d).sort((a,b)=>String(b.at).localeCompare(String(a.at))),dn=L.filter(n=>n.d).sort((a,b)=>String(b.da||b.at).localeCompare(String(a.da||a.at)));
+ const it=n=>`<div class="nbi ${n.d?'dn':''}"><input type="checkbox" ${n.d?'checked':''} onchange="ntDone('${n.id}',this.checked)" title="${n.d?'Tandai belum selesai':'Tandai sudah dikerjakan'}"><div class="nx">${esc(n.x)}<small>${esc(n.by||'—')} · ${n.at?fd(n.at.slice(0,10)):''}${n.d?` · ✓ dikerjakan${n.db?' oleh '+esc(n.db):''}${n.da?' '+fd(n.da.slice(0,10)):''}`:''}</small></div><button class="x" onclick="ntDel('${n.id}')" title="Hapus catatan">✕</button></div>`;
+ return `<div class="nb"><div class="hd"><h2>📌 Catatan tim — harus dikerjakan${op.length?` (${op.length})`:''}</h2>${dn.length?`<button class="x" style="color:#8a7230" onclick="NTD=!NTD;rr()">${NTD?'Sembunyikan':'Tampilkan'} yang sudah dikerjakan (${dn.length})</button>`:''}</div>
+ ${op.map(it).join('')||'<div style="color:#8a7230">Belum ada catatan. Tulis di bawah supaya seluruh tim bisa melihat.</div>'}${NTD?dn.map(it).join(''):''}
+ <div class="row" style="margin-top:10px"><textarea id="ntx" rows="1" placeholder="Tulis catatan untuk tim, lalu Enter (Shift+Enter = baris baru)" onkeydown="if(event.key=='Enter'&&!event.shiftKey){event.preventDefault();ntAdd()}"></textarea><button class="s" style="background:#f2d36b;color:#3d2e00" onclick="ntAdd()">+ Tambah</button></div></div>`}
+async function ntAdd(){const e=$('ntx'),v=e?.value.trim();if(!v)return e?.focus();await ntMut(L=>L.push({id:String(nid()),x:v,by:ME.nama,at:new Date().toISOString(),d:0}));tt2('Catatan ditambahkan');setTimeout(()=>$('ntx')?.focus(),0)}
+async function ntDone(id,d){await ntMut(L=>{const n=L.find(z=>z.id==id);if(n){n.d=d?1:0;n.db=d?ME.nama:'';n.da=d?new Date().toISOString():''}})}
+async function ntDel(id){if(!confirm('Hapus catatan ini untuk seluruh tim?'))return;await ntMut(L=>{const i=L.findIndex(z=>z.id==id);if(i>=0)L.splice(i,1)})}
 function minggu(){const w=monday(today()),days=[...Array(7).keys()].map(i=>addD(w,i)).filter(d=>!we(d)||S.t.some(x=>tAll(x).includes(d)));
  return `<div class="card"><div class="hd"><h2 style="margin:0">Minggu ini</h2><button class="s" onclick="go('jadwal')">Jadwal lengkap</button></div>${days.map(d=>{const L=S.t.filter(x=>tAll(x).includes(d));
   return `<div class="it" ${d==today()?'style="background:#f5fafc;margin:0 -18px;padding:10px 18px"':''}><small style="color:${libur(d)?'var(--red)':'var(--m)'}"><b>${hari(d)}, ${fds(d)}</b>${H()[d]?' · '+esc(H()[d]):''}${d==today()?' · hari ini':''}</small>
@@ -390,27 +442,44 @@ function dfBar(rid,noSt){const yrs=[...new Set(S.t.map(x=>String(x.tsm||'').slic
  ${DF.q||DF.y||DF.st||DF.j||DF.kt||DF.p?`<button class="x" style="color:var(--m)" onclick="Object.keys(DF).forEach(k=>DF[k]='');rr()">↺ Reset</button>`:''}</div></div>`}
 
 // ---------- PAPAN (kanban, seret kartu untuk ubah status) ----------
-function papan(){return dfBar('kanb',1)+`<div id="kanb">${kanB()}</div><small style="color:var(--m)">Seret kartu ke kolom lain untuk mengubah status (hanya Korwas, ketua tim penugasan itu, atau pembuatnya). Klik kartu untuk detail.</small>`}
-function kanB(){const L=dfL(1);return `<div class="kan">${KWO.map(s=>{let A=L.filter(x=>x.st==s).sort(srt);const more=s=='selesai'&&A.length>15?A.length-15:0;if(more)A=A.sort((a,b)=>String(b.ts).localeCompare(String(a.ts))).slice(0,15);
- return `<div class="kcol" data-st="${s}" ondragover="event.preventDefault();this.classList.add('dz')" ondragleave="this.classList.remove('dz')" ondrop="kDrop(event,'${s}')"><h3><span>${KWS[s]}</span><span class="st st-${s}">${L.filter(x=>x.st==s).length}</span></h3>
- ${A.map(x=>{const tl=lapTelat(x);return `<div class="kcard ${x.st}" ${canEdit(x)?`draggable="true" ondragstart="event.dataTransfer.setData('text/plain','${x.id}')"`:''} onclick="tForm('${x.id}')"><small><span class="tag" style="font-size:11px">${esc(x.j)}</span> ${esc(x.dj||'')}</small><div class="ttl">${esc(String(x.rc).slice(0,110))}</div>${x.aud?`<small>🏢 ${esc(x.aud)}</small><br>`:''}<div>${[x.kt,...(x.ang||[])].filter(Boolean).map(n=>who(n)).join('')}</div>
-  <small>${x.st=='selesai'?'✓ '+fd(x.ts):`⏱ ${umur(x)} hk sejak masuk`}${tl!==null?` · <span style="color:var(--red)">laporan ${tl} hk</span>`:''}${lewatT(x)?' · <span style="color:var(--red)">lewat target</span>':''}</small></div>`}).join('')}${more?`<small style="color:var(--m)">+${more} lainnya — lihat di Daftar</small>`:''}</div>`}).join('')}</div>`}
+const PJC=new Set(),PDO=new Set();
+function papan(){return dfBar('kanb',1)+`<div style="display:flex;justify-content:flex-end;gap:6px;margin:-4px 0 8px"><button class="s" onclick="jsOf(S.t).forEach(j=>PJC.add(j));PDO.clear();$('kanb').innerHTML=kanB()">⊟ Ciutkan</button><button class="s" onclick="PJC.clear();dfL(1).forEach(x=>PDO.add(x.j+'||'+(x.dj||'')));$('kanb').innerHTML=kanB()">⊞ Buka semua</button></div><div id="kanb">${kanB()}</div><small style="color:var(--m)">Klik baris jenis / detail untuk membuka papannya. Seret kartu ke kolom lain untuk mengubah status (hanya Korwas, ketua tim penugasan itu, atau pembuatnya). Klik kartu untuk detail.</small>`}
+// progres kluster: bobot pending 0, pelaksanaan ⅓, penyusunan laporan ⅔, selesai 1
+const PW={pending:0,proses:1/3,lapor:2/3,selesai:1};
+function pgH(A){const n=A.length,c=s=>A.filter(x=>x.st==s).length,pc=n?Math.round(A.reduce((t,x)=>t+PW[x.st],0)/n*100):0;
+ return {bar:`<div><div class="spb" title="${KWO.map(s=>KWS[s]+': '+c(s)).join(' · ')}">${KWO.map(s=>c(s)?`<i class="${s}" style="width:${c(s)/n*100}%"></i>`:'').join('')}</div><span class="pgt"><b style="color:var(--ink)">${pc}%</b> progres · ${c('selesai')} dari ${n} selesai</span></div>`,
+  num:`<span class="pnum">${KWO.map(s=>c(s)?`<span class="st st-${s}">${c(s)} ${KWS[s].toLowerCase()}</span>`:'').join('')}</span>`}}
+function kCard(x){const tl=lapTelat(x);return `<div class="kcard ${x.st}" ${canEdit(x)?`draggable="true" ondragstart="event.dataTransfer.setData('text/plain','${x.id}')"`:''} onclick="tForm('${x.id}')"><div class="ttl" style="margin-top:0">${esc(String(x.rc).slice(0,110))}</div>${x.aud?`<small>🏢 ${esc(x.aud)}</small><br>`:''}<div>${[x.kt,...(x.ang||[])].filter(Boolean).map(n=>who(n)).join('')}</div>
+  <small>${x.st=='selesai'?'✓ '+fd(x.ts):`⏱ ${umur(x)} hk sejak masuk`}${tl!==null?` · <span style="color:var(--red)">laporan ${tl} hk</span>`:''}${lewatT(x)?' · <span style="color:var(--red)">lewat target</span>':''}</small></div>`}
+function kanMini(B){return `<div class="kan">${KWO.map(s=>{let A=B.filter(x=>x.st==s).sort(srt);const more=s=='selesai'&&A.length>10?A.length-10:0;if(more)A=A.sort((a,b)=>String(b.ts).localeCompare(String(a.ts))).slice(0,10);
+ return `<div class="kcol" data-st="${s}" ondragover="event.preventDefault();this.classList.add('dz')" ondragleave="this.classList.remove('dz')" ondrop="kDrop(event,'${s}')"><h3><span>${KWS[s]}</span><span class="st st-${s}">${B.filter(x=>x.st==s).length}</span></h3>
+ ${A.map(kCard).join('')}${more?`<small style="color:var(--m)">+${more} lainnya — lihat di Daftar</small>`:''}</div>`}).join('')}</div>`}
+function kanB(){const L=dfL(1),qa=!!nrm(DF.q).trim();
+ if(!L.length)return '<div class="card"><small class="mt">Tidak ada penugasan yang cocok dengan filter.</small></div>';
+ const P0=pgH(L);
+ return `<div class="card" style="display:grid;grid-template-columns:260px minmax(220px,1fr) 400px;gap:14px;align-items:center;padding:12px 14px"><b>Seluruh penugasan (sesuai filter) · ${L.length}</b>${P0.bar}${P0.num}</div>`+
+ jsOf(L).map(j=>{const A=L.filter(x=>x.j==j),ds=dsOf(j,A),P=pgH(A);
+ return `<details class="pj" ${PJC.has(j)?'':'open'} data-j="${esc(j)}" ontoggle="this.open?PJC.delete(this.dataset.j):PJC.add(this.dataset.j)"><summary><span><span class="tag">${esc(j)}</span> ${A.length} penugasan</span>${P.bar}${P.num}</summary><div class="in">
+ ${ds.map(d=>{const B=A.filter(x=>(x.dj||'')==d),k=j+'||'+d,Q=pgH(B);return `<details class="pd" ${PDO.has(k)||qa?'open':''} data-k="${esc(k)}" ontoggle="this.open?PDO.add(this.dataset.k):PDO.delete(this.dataset.k)"><summary><span>↳ ${esc(d||'Tanpa detail jenis')} <small style="color:var(--m);font-weight:400">(${B.length})</small></span>${Q.bar}${Q.num}</summary>${kanMini(B)}</details>`}).join('')}</div></details>`}).join('')}
 async function kDrop(e,st){e.preventDefault();document.querySelectorAll('.kcol').forEach(c=>c.classList.remove('dz'));const id=e.dataTransfer.getData('text/plain'),x=fT(id);
  if(!x||x.st==st)return;if(!canEdit(x))return alert('Status penugasan ini hanya bisa diubah Korwas, ketua timnya, atau pembuatnya.');await setSt(id,st)}
 
 // ---------- DAFTAR (dikelompokkan per jenis & detail jenis) ----------
+const DJO=new Set();
 function daftar(){const c=s=>dfL(1).filter(x=>x.st==s).length;
  return `<div class="stt" style="margin-bottom:12px"><div style="cursor:pointer" onclick="DF.st='';rr()"><small>Semua (sesuai filter)</small><b>${dfL(1).length}</b></div>${KWO.map(s=>`<div style="cursor:pointer;${DF.st==s?'box-shadow:inset 0 0 0 2px var(--ink)':''}" onclick="DF.st=DF.st=='${s}'?'':'${s}';rr()"><small>${KWS[s]}</small><b>${c(s)}</b></div>`).join('')}</div>`+dfBar('dafl')+
- `<div style="display:flex;justify-content:flex-end;gap:6px;margin:-4px 0 8px"><button class="s" onclick="jsOf(S.t).forEach(j=>TCL.add(j));$('dafl').innerHTML=dafL()" title="Ciutkan semua">⊟</button><button class="s" onclick="TCL.clear();$('dafl').innerHTML=dafL()" title="Buka semua">⊞</button><button class="s" onclick="xlAll(dfL())">📊 Excel (sesuai filter)</button></div><div id="dafl">${dafL()}</div>`}
-function dafL(){const L=dfL(),q=nrm(DF.q).split(/\s+/).filter(Boolean);
+ `<div style="display:flex;justify-content:flex-end;gap:6px;margin:-4px 0 8px"><button class="s" onclick="jsOf(S.t).forEach(j=>TCL.add(j));DJO.clear();$('dafl').innerHTML=dafL()" title="Ciutkan semua">⊟ Ciutkan</button><button class="s" onclick="TCL.clear();dfL().forEach(x=>DJO.add(x.j+'||'+(x.dj||'')));$('dafl').innerHTML=dafL()" title="Buka semua jenis dan detail">⊞ Buka semua</button><button class="s" onclick="xlAll(dfL())">📊 Excel (sesuai filter)</button></div><div id="dafl">${dafL()}</div>`}
+const cntSt=A=>KWO.map(s=>{const n=A.filter(x=>x.st==s).length;return n?`<span class="st st-${s}">${n} ${KWS[s].toLowerCase()}</span>`:''}).join(' ');
+const dsOf=(j,A)=>[...new Set(A.map(x=>x.dj||''))].sort((a,b)=>((S.cfg.det[j]||[]).indexOf(a)-(S.cfg.det[j]||[]).indexOf(b))||(a?0:1)-(b?0:1));
+function dafL(){const L=dfL(),q=nrm(DF.q).split(/\s+/).filter(Boolean),qa=!!q.length;
  if(!S.t.length)return `<div class="card"><h2>Belum ada penugasan tim</h2><small style="color:var(--m)">Catat setiap penugasan yang masuk ke Korwas Jawa – Bali. Siapa pun di tim bisa mencatat; Korwas dan ketua tim mengatur tim dan statusnya.</small><br><button class="p" onclick="tForm()">+ Penugasan masuk</button></div>`;
  if(!L.length)return '<div class="card"><small class="mt">Tidak ada penugasan yang cocok dengan filter.</small></div>';
- const cnt=A=>KWO.map(s=>{const n=A.filter(x=>x.st==s).length;return n?`<span class="st st-${s}">${n} ${KWS[s].toLowerCase()}</span>`:''}).join(' ');
- return jsOf(L).map(j=>{const A=L.filter(x=>x.j==j),ds=[...new Set(A.map(x=>x.dj||''))].sort((a,b)=>((S.cfg.det[j]||[]).indexOf(a)-(S.cfg.det[j]||[]).indexOf(b))||(a?0:1)-(b?0:1));
- return `<details class="cl card" ${TCL.has(j)?'':'open'} data-j="${esc(j)}" ontoggle="this.open?TCL.delete(this.dataset.j):TCL.add(this.dataset.j)"><summary><span class="tag">${esc(j)}</span> ${A.length} penugasan<span class="cnt">${cnt(A)}</span></summary><div class="in">
- ${ds.map(d=>{const B=A.filter(x=>(x.dj||'')==d).sort((a,b)=>KWO.indexOf(a.st)-KWO.indexOf(b.st)||srt(a,b));return `<h4>↳ ${esc(d||'Tanpa detail jenis')} <small style="color:var(--m);font-weight:400">(${B.length})</small></h4>
- <table class="tb kt2"><thead><tr><th style="width:30px">No</th><th style="width:110px">Surat masuk</th><th>Rincian</th><th style="width:240px">Tim</th><th style="width:165px">Status</th><th style="width:120px">Waktu</th><th style="width:80px"></th></tr></thead><tbody>
- ${B.map((x,i)=>{const p=prL(x)[0];return `<tr><td>${i+1}</td><td>${fd(x.tsm)}${x.ns?`<br><small style="color:var(--m)">${esc(x.ns)}</small>`:''}</td><td style="white-space:pre-line"><a href="#" style="text-decoration:none;color:inherit" onclick="tForm('${x.id}');return false">${hl(x.rc,q)}</a>${x.aud?`<br><small>🏢 ${esc(x.aud)}</small>`:''}${p?`<br><small style="color:var(--m)">📝 ${fd(p.tg)} · ${esc(p.by||'')}: ${esc(String(p.x).slice(0,110))}</small>`:''}</td><td>${timH(x)}</td><td>${selSt(x)}</td><td><small>${x.st=='selesai'?`✓ ${fd(x.ts)}`:`${umur(x)} hari kerja sejak masuk`}${x.tgt?`<br>🎯 ${fd(x.tgt)}`:''}</small></td><td class="ac"><button class="x" style="color:var(--ink)" onclick="tForm('${x.id}')">${canEdit(x)?'Edit':'Buka'}</button>${canDel(x)?`<button class="x" onclick="tDel('${x.id}')">Hapus</button>`:''}</td></tr>`}).join('')}</tbody></table>`}).join('')}</div></details>`}).join('')}
+ return jsOf(L).map(j=>{const A=L.filter(x=>x.j==j),ds=dsOf(j,A);
+ return `<details class="cl card" ${TCL.has(j)?'':'open'} data-j="${esc(j)}" ontoggle="this.open?TCL.delete(this.dataset.j):TCL.add(this.dataset.j)"><summary><span class="tag">${esc(j)}</span> ${A.length} penugasan<span class="cnt">${cntSt(A)}</span></summary><div class="in">
+ ${ds.map(d=>{const B=A.filter(x=>(x.dj||'')==d).sort((a,b)=>KWO.indexOf(a.st)-KWO.indexOf(b.st)||srt(a,b)),k=j+'||'+d,op=DJO.has(k)||qa||ds.length==1&&B.length<=5;
+ return `<details class="dj" ${op?'open':''} data-k="${esc(k)}" ontoggle="this.open?DJO.add(this.dataset.k):DJO.delete(this.dataset.k)"><summary>↳ ${esc(d||'Tanpa detail jenis')} <small style="color:var(--m);font-weight:400">(${B.length})</small><span class="cnt">${cntSt(B)}</span></summary>
+ <table class="tb kt2"><thead><tr><th style="width:30px">No</th><th style="width:150px">Nomor ND &amp; SPT</th><th>Rincian</th><th style="width:220px">Tim</th><th style="width:160px">Status</th><th style="width:140px">Tanggal pelaksanaan</th><th style="width:150px">Waktu</th><th style="width:80px"></th></tr></thead><tbody>
+ ${B.map((x,i)=>{const p=prL(x)[0];return `<tr><td>${i+1}</td><td><small style="color:var(--m)">ND</small> ${x.nd?hl(x.nd,q):'<span class="mt">—</span>'}<br><small style="color:var(--m)">SPT</small> ${x.spt?hl(x.spt,q):'<span class="mt">—</span>'}</td><td style="white-space:pre-line"><a href="#" style="text-decoration:none;color:inherit" onclick="tForm('${x.id}');return false">${hl(x.rc,q)}</a>${x.aud?`<br><small>🏢 ${esc(x.aud)}</small>`:''}${p?`<br><small style="color:var(--m)">📝 ${fd(p.tg)} · ${esc(p.by||'')}: ${esc(String(p.x).slice(0,110))}</small>`:''}</td><td>${timH(x)}</td><td>${selSt(x)}</td><td>${tglP(x)}</td><td>${waktu(x)}</td><td class="ac"><button class="x" style="color:var(--ink)" onclick="tForm('${x.id}')">${canEdit(x)?'Edit':'Buka'}</button>${canDel(x)?`<button class="x" onclick="tDel('${x.id}')">Hapus</button>`:''}</td></tr>`}).join('')}</tbody></table></details>`}).join('')}</div></details>`}).join('')}
 
 // =====================================================================
 // JADWAL TIM (matriks orang × tanggal) & BEBAN KERJA
@@ -704,6 +773,7 @@ function seed(){const t=today(),a=n=>addD(t,n),rng=(s,n)=>{const o=[];let d=s;wh
   {j:'Audit',dj:'Pengadaan barang/jasa',tsm:a(-8),ns:'ND-117/Korwas/2026',rc:'Audit atas pengadaan pekerjaan konstruksi (contoh)',aud:'BPJN Jateng – DIY',dal:MD,kt:DA,ang:[AS,TA],st:'pending',tgt:a(30),dk:[],dl:rng(a(9),4),pr:[P(MD,-8,'Penugasan dicatat',1),P(MD,-7,'Tim sudah ditetapkan, jadwal dinas luar menyusul SPT')]},
   {j:'Reviu',dj:'Laporan keuangan',tsm:a(-12),rc:'Reviu laporan keuangan semester (contoh)',aud:'Setditjen',dal:MD,kt:RU,ang:[TA],st:'proses',tm:a(-4),tgt:a(6),dk:rng(a(-4),6),dl:[],pr:[P(RU,-12,'Penugasan dicatat',1),P(TA,-1,'Rekonsiliasi data aset sedang berjalan')]}
  ].map((x,i)=>({id:'demo-'+(i+1),cb:'made@contoh.go.id',cbn:MD,...x}));
- return{t:T,m,cfg:{...CFG0(),det:{Audit:['ADTT','Pengadaan barang/jasa'],Reviu:['RKA K/L','Laporan keuangan'],Evaluasi:['SAKIP'],Pemantauan:['Tindak lanjut']},pgw:[LX]}}}
+ const nt=[{id:'n1',x:'Kirim konsep laporan SAKIP ke Korwas sebelum Jumat',by:RU,at:new Date().toISOString(),d:0},{id:'n2',x:'Lengkapi nomor SPT untuk audit pengadaan konstruksi',by:MD,at:new Date().toISOString(),d:0}];
+ return{t:T,m,nt,cfg:{...CFG0(),det:{Audit:['ADTT','Pengadaan barang/jasa'],Reviu:['RKA K/L','Laporan keuangan'],Evaluasi:['SAKIP'],Pemantauan:['Tindak lanjut']},pgw:[LX]}}}
 boot();
 </script></body></html>
