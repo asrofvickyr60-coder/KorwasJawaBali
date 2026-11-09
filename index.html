@@ -387,8 +387,30 @@ select.ps{width:auto;border:0;padding:4px 6px;cursor:pointer;border-radius:8px}
 .tgb{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}.tgb h4{margin:0 0 2px;font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:.05em}
 .tr2{border-top:1px solid #eef1f6;padding:6px 0;cursor:pointer;min-width:0}.tgb h4+.tr2{border-top:0}.tr2:hover .ar-t{color:var(--ink2)}
 .tr2a{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tr2b{font-size:12px;color:var(--m)}
+/* ===== form: tanggal otomatis ===== */
+.tinf{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:2px 0 10px}.tinf>div{background:#f6f8fc;border:1px solid #e6ebf3;border-radius:10px;padding:7px 10px;min-width:0}
+.tinf small{display:block;font-size:11.5px;color:var(--m)}.tinf b{display:block;font-size:14.5px;margin:1px 0}
+.tinf .tinfs{grid-column:1/-1;font-size:13px;color:#475569}.tinf .tinfs.hi{background:#fdf1f0;border-color:#f3c7c3;color:#9f1d14}.tinf .tinfs.ok{background:#effaf6;border-color:#bfe8da;color:#0a7262}
+.tinf .tinfs b{display:inline;font-size:13px}
+/* ===== papan status: donut + kolom ===== */
+.dn{position:relative;flex:0 0 auto;width:46px;height:46px;border-radius:50%;display:grid;place-items:center}.dn:before{content:'';position:absolute;inset:7px;background:#fff;border-radius:50%}
+.dn b{position:relative;font-size:11.5px;line-height:1.05;text-align:center}.dn.big{width:132px;height:132px}.dn.big:before{inset:16px}.dn.big b{font-size:26px}.dn.big b small{display:block;font-size:11px;font-weight:500;color:var(--m)}
+.pgr{display:flex;align-items:center;gap:10px}.pgr .pgt{margin:0}
+.pgs{display:grid;grid-template-columns:minmax(320px,0.9fr) 1.6fr;gap:28px;align-items:center;padding:16px 18px}.pgs1{display:flex;align-items:center;gap:18px}
+.pgn{font-size:28px;font-weight:700;line-height:1.1;margin-bottom:6px}.lgv{display:grid;gap:3px;font-size:13px}.lgv>div{display:flex;align-items:center;gap:7px}.lgv>div>b:last-child{margin-left:auto;padding-left:10px}
+.lgv .lgc{width:10px;height:10px;border-radius:3px;display:inline-block}.lgc.pending{background:#f97316}.lgc.proses{background:#3557d4}.lgc.lapor{background:#8b5cf6}.lgc.selesai{background:#0e9384}
+.vst{display:flex;flex-direction:column-reverse;width:62%;max-width:58px;border-radius:6px 6px 0 0;overflow:hidden;min-height:2px}.vst i{display:block}
+.vl.wr>div{white-space:normal;line-height:1.2}.vl.wr small{color:var(--ink);font-weight:600}
+@media (max-width:900px){.pgs{grid-template-columns:1fr}.tinf{grid-template-columns:1fr 1fr}}
+/* ===== jadwal: hari penugasan per bulan per orang ===== */
+.hpg{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px;margin-top:6px}
+.hpc{border:1px solid var(--l);border-radius:12px;padding:10px 12px;background:#fff}.hph{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}.hph small{color:var(--m)}
+.hpb{display:flex;align-items:stretch;gap:4px;height:130px;border-bottom:1px solid var(--l);background:repeating-linear-gradient(to top,#eef1f6 0 1px,transparent 1px 32px)}
+.hpm{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-width:0}.hpm b{font-size:11px;margin-bottom:2px}
+.hps{display:flex;flex-direction:column-reverse;width:72%;border-radius:4px 4px 0 0;overflow:hidden;min-height:0}.hps i{display:block}
+.hpl{display:flex;gap:4px;margin-top:3px}.hpl span{flex:1;text-align:center;font-size:10.5px;color:var(--m)}
 /* ===== jadwal tim: grafik beban ===== */
-.bcg{display:grid;grid-template-columns:1.5fr 1fr;gap:24px}.bcg h3{margin-top:8px}
+.bcg{display:grid;grid-template-columns:1fr 1fr;gap:28px}.bcg h3{margin-top:8px}
 .bc-r{display:grid;grid-template-columns:200px 1fr;gap:10px;align-items:center;padding:5px 6px;cursor:pointer;border-radius:8px}.bc-r:hover{background:#f6f8fc}
 .bc-r.ax{cursor:default;padding-top:0}.bc-r.ax:hover{background:none}
 .bc-t{display:flex;align-items:center;gap:8px}.bc-t>b{width:22px;text-align:right;font-size:13px}
@@ -492,7 +514,11 @@ onTeam=(x,n=ME?.nama)=>team(x).includes(n),
 nmT=x=>(x.j||'')+(x.dj?' – '+x.dj:''),
 umur=x=>x.tsm&&x.tsm<today()?hk(x.tsm,today()):0,
 lapTelat=x=>(x.st=='proses'||x.st=='lapor')&&akhir(x)&&akhir(x)<today()&&!String(x.ln||'').trim()?hk(akhir(x),today()):null,
-lewatT=x=>x.st!='selesai'&&x.tgt&&x.tgt<today(),
+// tanggal turunan: mulai = hari pertama pelaksanaan, target = hari terakhir pelaksanaan, selesai = tanggal laporan
+mulaiX=x=>tAll(x)[0]||'',
+selX=x=>x.st=='selesai'?(x.tlp||x.ts||''):'',
+telatL=x=>{const a=akhir(x),e=x.tlp||(x.st=='selesai'?x.ts:'');return a&&e&&e>a?hk(a,e):null},
+drv=x=>{x.tm=mulaiX(x);x.tgt=akhir(x);x.ts=x.st=='selesai'?(x.tlp||x.ts||today()):'';return x},
 prL=x=>(x.pr||[]).slice().sort((a,b)=>String(b.tg).localeCompare(String(a.tg))||b.id-a.id),
 srt=(a,b)=>String(a.tsm||'').localeCompare(String(b.tsm||''))||String(a.id).localeCompare(String(b.id)),
 badge=st=>`<span class="st st-${st}" title="${KWD[st]}">${KWS[st]}</span>`,
@@ -621,10 +647,10 @@ function wkGrid(dash){const w0=addD(monday(today()),WK*7),t=today(),P=KN(),
  D7=[...Array(7).keys()].map(i=>addD(w0,i)).filter(d=>!we(d)||P.some(p=>tOn(p,d).length)),
  TV=S.t.filter(x=>tAll(x).some(d=>D7.includes(d))&&P.some(p=>onTeam(x,p)));tcSet(TV);
  const head=`<div class="wnav"><h2>${dash?'📅 Jadwal tim — ':''}${wkLbl(WK)}</h2><span class="wl2">${fds(w0)} – ${fd(addD(w0,4))}</span><span class="sp2"></span>
-  <button class="s" onclick="WK--;rr()" title="Minggu sebelumnya">‹</button>${WK?`<button class="s" onclick="WK=0;rr()">Minggu ini</button>`:''}<button class="s" onclick="WK++;rr()" title="Minggu berikutnya">›</button>${dash?`<button class="s" onclick="go('jadwal')">Cari yang kosong →</button>`:''}</div>`;
+  <button class="s" onclick="WK--;rr()" title="Minggu sebelumnya">‹</button>${WK?`<button class="s" onclick="WK=0;rr()">Minggu ini</button>`:''}<button class="s" onclick="WK++;rr()" title="Minggu berikutnya">›</button>${dash?`<button class="s" onclick="go('jadwal')">Buka jadwal tim →</button>`:''}</div>`;
  const cell=(p,d)=>{const L=tOn(p,d),cls=[d==t?'td':'',libur(d)?'lb':'',d<t?'lw':''].join(' '),dl=L.filter(x=>(x.dl||[]).includes(d)).length;
   const body=L.length?L.map(x=>{const l=(x.dl||[]).includes(d);return `<span class="wi ${l&&dl>1?'l2':''}" style="${tcS(x)}" onclick="tForm('${x.id}')" title="${l?'Dinas luar':'Di kantor'} · ${esc(nmT(x))}${x.aud?' · '+esc(x.aud):''}\n${esc(x.rc)}\nStatus: ${KWS[x.st]}${psOn(x)&&(x.ps||x.psn)?'\nProgres: '+esc([PSL[x.ps],x.psn].filter(Boolean).join(' — ')):''}"><span class="wtx">${l?'🚗':'🏢'} ${esc(rcS(x))}</span></span>`}).join('')
-   :libur(d)?`<span class="offd">${esc(H()[d]||'Libur')}</span>`:d<t?'':'<span class="free">kosong</span>';
+   :libur(d)?`<span class="offd">${esc(H()[d]||'Libur')}</span>`:'<span class="free">kosong</span>';
   return `<td class="${cls}">${body}</td>`};
  const freeN=d=>libur(d)?null:P.filter(p=>!tOn(p,d).length).length;
  const fw=p=>D7.filter(d=>d>=t&&!libur(d)&&!tOn(p,d).length).length,anyF=D7.some(d=>d>=t&&!libur(d));
@@ -656,13 +682,12 @@ function timB(){const G=new Map();
  :'<small class="mt">Tidak ada penugasan yang sedang dilaksanakan atau menunggu laporan.</small>'}</div>`}
 let PGO=false;
 function perhatian(){const act=S.t.filter(x=>x.st!='selesai'),PD=S.t.filter(x=>x.st=='pending').sort((a,b)=>umur(b)-umur(a)),
- TL=act.map(x=>[x,lapTelat(x)]).filter(z=>z[1]!==null).sort((a,b)=>b[1]-a[1]),LT=act.filter(lewatT);
+ TL=act.map(x=>[x,lapTelat(x)]).filter(z=>z[1]!==null).sort((a,b)=>b[1]-a[1]);
  const row=(x,m,hi)=>`<div class="ar" onclick="tForm('${x.id}')"><div class="ar1"><span class="tag">${esc(x.j)}</span> <b>${esc(x.dj||'')}</b> <span class="ar-t">${esc(String(x.rc).slice(0,110))}</span></div><div class="ar2"><span class="chip tl ${hi?'hi':''}">${m}</span>${avs(x)}${psChip(x)}</div></div>`;
- const n=TL.length+LT.length;
+ const n=TL.length;
  return `<div class="card" ${n?'style="border-color:#f0c9c5"':''}><h2>⚠️ Perlu perhatian</h2>
  ${TL.length?`<div class="atg"><h4>📝 Laporan belum terbit (${TL.length})</h4>${TL.map(([x,d])=>row(x,`${d} hari kerja sejak pelaksanaan terakhir`,d>10)).join('')}</div>`:''}
- ${LT.length?`<div class="atg"><h4>⏰ Lewat target (${LT.length})</h4>${LT.map(x=>row(x,`target ${fd(x.tgt)}`,true)).join('')}</div>`:''}
- ${!n?'<small class="mt">Tidak ada laporan tertunda atau penugasan lewat target ✓</small>':''}
+  ${!n?'<small class="mt">Tidak ada laporan tertunda ✓</small>':''}
  ${PD.length?`<details class="pgd" ${PGO?'open':''} ontoggle="PGO=this.open"><summary>⏸ ${PD.length} penugasan pending — klik untuk lihat<small>terlama ${umur(PD[0])} hari kerja</small></summary><div class="in">${PD.map(x=>row(x,`${umur(x)} hari kerja sejak surat masuk`,umur(x)>20)).join('')}</div></details>`:''}</div>`}
 let NTD=false;
 function notesB(){const L=(S.nt||[]).slice(),op=L.filter(n=>!n.d).sort((a,b)=>String(b.at).localeCompare(String(a.at))),dn=L.filter(n=>n.d).sort((a,b)=>String(b.da||b.at).localeCompare(String(a.da||a.at)));
@@ -683,13 +708,9 @@ function beban(){const R=bebanRows(),act=S.t.filter(x=>x.st!='selesai'),ST=['pen
  return `<div class="card"><div class="hd"><h2 style="margin:0">📊 Beban kerja tim</h2><small style="color:var(--m)">penugasan aktif (belum selesai) · klik batang untuk melihat penugasannya</small></div>
  <div class="bcg"><div><h3>Penugasan aktif per orang, menurut status</h3><div class="bc">${R.map(r=>`<div class="bc-r" onclick="DF.p='${esc(r.n)}';DF.st='';go('daftar')" title="${esc(r.n)}\n${ST.map(s=>KWS[s]+': '+r[s]).join('\n')}"><div class="bc-n">${who(r.n)}</div><div class="bc-t"><div class="bc-g">${tk.map(t=>`<u style="left:${t/mx*100}%"></u>`).join('')}<div class="bc-b" style="width:${r.tot/mx*100}%">${ST.map(s=>r[s]?`<i class="${s}" style="flex:${r[s]}">${r[s]}</i>`:'').join('')}</div></div><b>${r.tot}</b></div></div>`).join('')}
  <div class="bc-r ax"><div></div><div class="bc-t"><div class="bc-g">${tk.map(t=>`<span style="left:${t/mx*100}%">${t}</span>`).join('')}</div><b></b></div></div></div>
- <div class="lg">${ST.map(s=>`<b class="lgc ${s}"></b>${KWS[s]}`).join('')}</div>
- <h3 style="margin-top:18px">Peran di penugasan aktif</h3><div class="bc">${R.map(r=>`<div class="bc-r" onclick="DF.p='${esc(r.n)}';DF.st='';go('daftar')" title="${esc(r.n)}\nDalnis: ${r.dal} · Katim: ${r.kt} · Anggota: ${r.ang}"><div class="bc-n">${who(r.n)}</div><div class="bc-t"><div class="bc-g"><div class="bc-b" style="width:${(r.dal+r.kt+r.ang)/mxr*100}%">${RL.map(([k,l,c])=>r[k]?`<i style="flex:${r[k]};background:${c}" title="${l}: ${r[k]}">${r[k]}</i>`:'').join('')}</div></div><b>${r.dal+r.kt+r.ang}</b></div></div>`).join('')}</div>
- <div class="lg">${RL.map(([k,l,c])=>`<b style="background:${c}"></b>${l}`).join('')}</div></div>
- <div><h3>Hari dinas luar — ${bl}</h3><div class="vc">${R.map(r=>`<div title="${esc(r.n)}: ${r.dl} hari dinas luar di ${bl}"><b>${r.dl}</b><i class="vb" style="height:${r.dl/mxd*82}%;background:${clr(r.n)}"></i></div>`).join('')}</div>
- <div class="vl">${R.map(r=>`<div>${esc(r.n.split(/\s+/).slice(0,r.n.split(/\s+/)[0].length<3?2:1).join(' '))}</div>`).join('')}</div>
- <h3 style="margin-top:18px">Penugasan pending per orang</h3><div class="vc sm">${R.map(r=>`<div title="${esc(r.n)}: ${r.pd} pending" onclick="DF.p='${esc(r.n)}';DF.st='pending';go('daftar')" style="cursor:pointer"><b>${r.pd}</b><i class="vb" style="height:${r.pd/Math.max(1,...R.map(z=>z.pd))*80}%;background:#f97316"></i></div>`).join('')}</div>
- <div class="vl">${R.map(r=>`<div>${esc(r.n.split(/\s+/).slice(0,r.n.split(/\s+/)[0].length<3?2:1).join(' '))}</div>`).join('')}</div></div></div></div>`}
+ <div class="lg">${ST.map(s=>`<b class="lgc ${s}"></b>${KWS[s]}`).join('')}</div></div>
+ <div><h3>Peran di penugasan aktif</h3><div class="bc">${R.map(r=>`<div class="bc-r" onclick="DF.p='${esc(r.n)}';DF.st='';go('daftar')" title="${esc(r.n)}\nDalnis: ${r.dal} · Katim: ${r.kt} · Anggota: ${r.ang}"><div class="bc-n">${who(r.n)}</div><div class="bc-t"><div class="bc-g"><div class="bc-b" style="width:${(r.dal+r.kt+r.ang)/mxr*100}%">${RL.map(([k,l,c])=>r[k]?`<i style="flex:${r[k]};background:${c}" title="${l}: ${r[k]}">${r[k]}</i>`:'').join('')}</div></div><b>${r.dal+r.kt+r.ang}</b></div></div>`).join('')}</div>
+ <div class="lg">${RL.map(([k,l,c])=>`<b style="background:${c}"></b>${l}`).join('')}</div></div></div></div>`}
 function aktivitas(){const L=S.t.flatMap(x=>(x.pr||[]).map(p=>[x,p])).sort((a,b)=>String(b[1].at||b[1].tg).localeCompare(String(a[1].at||a[1].tg))||b[1].id-a[1].id).slice(0,8);
  return `<div class="card"><h2>🕑 Aktivitas terbaru</h2>${L.map(([x,p])=>`<div class="act"><div>${p.by?`<i class="who" style="padding:0;background:none"><i style="background:${clr(p.by)}">${esc(ini(p.by))}</i></i>`:'•'}</div><div style="flex:1;cursor:pointer" onclick="tForm('${x.id}')"><b>${esc(p.by||'—')}</b> ${p.a?'<i>'+esc(p.x)+'</i>':'· '+esc(p.x)}<br><small>${fd(p.tg)} · ${esc(nmT(x))}${x.aud?' · '+esc(x.aud):''}</small></div></div>`).join('')||'<small class="mt">Belum ada aktivitas.</small>'}</div>`}
 
@@ -699,8 +720,8 @@ function aktivitas(){const L=S.t.flatMap(x=>(x.pr||[]).map(p=>[x,p])).sort((a,b)
 function card(x){const u=umur(x),P=prL(x),tl=lapTelat(x),nx=KWN[x.st];
  return `<div class="card kwc ${x.st}"><div class="hd"><span><span class="tag">${esc(x.j)}</span> <b>${esc(x.dj||'')}</b>${x.aud?` <span class="sfx">· ${esc(x.aud)}</span>`:''}</span>${selSt(x)}</div>
  <div style="white-space:pre-line;margin:6px 0">${esc(x.rc)}</div><div>${timH(x)}</div>
- <div class="meta">📨 Surat masuk ${fd(x.tsm)}${x.ns?' · No. '+esc(x.ns):''}${tAll(x).length?` · 📅 ${fds(tAll(x)[0])}${tAll(x).length>1?' – '+fds(akhir(x)):''} (${(x.dl||[]).length?(x.dl||[]).length+' hr DL':''}${(x.dl||[]).length&&(x.dk||[]).length?', ':''}${(x.dk||[]).length?(x.dk||[]).length+' hr kantor':''})`:''}${x.tgt?' · 🎯 target '+fd(x.tgt):''}</div>
- ${x.st!='selesai'?`<span class="chip tl ${u>20?'hi':''}" title="Hari kerja sejak surat masuk">⏱ ${u} hari kerja sejak masuk</span>`:''}${tl!==null?`<span class="chip tl ${tl>10?'hi':''}">📝 laporan belum terbit · ${tl} hk</span>`:''}${lewatT(x)?'<span class="chip tl hi">⏰ lewat target</span>':''}
+ <div class="meta">📨 Surat masuk ${fd(x.tsm)}${x.ns?' · No. '+esc(x.ns):''}${tAll(x).length?` · 📅 ${fds(tAll(x)[0])}${tAll(x).length>1?' – '+fds(akhir(x)):''} (${(x.dl||[]).length?(x.dl||[]).length+' hr DL':''}${(x.dl||[]).length&&(x.dk||[]).length?', ':''}${(x.dk||[]).length?(x.dk||[]).length+' hr kantor':''})`:''}${x.st=='selesai'&&selX(x)?' · ✓ laporan '+fd(selX(x)):''}</div>
+ ${x.st!='selesai'?`<span class="chip tl ${u>20?'hi':''}" title="Hari kerja sejak surat masuk">⏱ ${u} hari kerja sejak masuk</span>`:''}${tl!==null?`<span class="chip tl ${tl>10?'hi':''}">📝 laporan belum terbit · ${tl} hk</span>`:''}${telatL(x)!==null?`<span class="chip tl hi" title="Hari kerja dari hari terakhir pelaksanaan sampai tanggal laporan">📝 laporan terlambat ${telatL(x)} hk</span>`:''}
  ${psOn(x)?`<div class="psw"><small style="color:var(--m)">Progres ${KWS[x.st].toLowerCase()}</small>${psEd(x)}</div>`:''}
  ${x.ket?`<div class="drb" style="margin-top:8px;background:#fff8e6;color:#7a4a00">${esc(x.ket)}</div>`:''}
  <h3 style="margin-top:10px">Progres (${P.length})</h3>${P.slice(0,3).map(p=>`<div class="lgn"><small>${fd(p.tg)} · ${esc(p.by||'')}</small> · ${p.a?'<i>'+esc(p.x)+'</i>':esc(p.x)}</div>`).join('')||'<small class="mt">Belum ada catatan progres.</small>'}${P.length>3?`<small style="color:var(--m)"> +${P.length-3} lainnya</small>`:''}
@@ -708,7 +729,7 @@ function card(x){const u=umur(x),P=prL(x),tl=lapTelat(x),nx=KWN[x.st];
  <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">${nx&&canEdit(x)?`<button class="s" onclick="setSt('${x.id}','${nx[0]}')">${nx[1]}</button>`:''}<button class="s" onclick="tForm('${x.id}')">${canEdit(x)?'Edit / riwayat':'Detail / riwayat'}</button>${x.fo?`<a class="s" style="text-decoration:none" href="${esc(x.fo)}" target="_blank" rel="noopener">📁 Folder</a>`:''}</div></div>`}
 async function setSt(id,st){const x0=fT(id);if(!x0||x0.st==st)return;let ln='';
  if(st=='selesai'&&!String(x0.ln||'').trim()){ln=prompt('Nomor laporan (boleh dikosongkan, bisa diisi nanti):','');if(ln===null)return rr()}
- await mut(id,x=>{x.st=st;x.ps='';x.psn='';if(st=='proses'&&!x.tm)x.tm=today();if(st=='selesai'){if(!x.ts)x.ts=today();if(ln&&!x.ln){x.ln=ln.trim();if(!x.tlp)x.tlp=today()}}if(st!='selesai')x.ts='';
+ await mut(id,x=>{x.st=st;x.ps='';x.psn='';if(st=='selesai'&&ln&&!x.ln){x.ln=ln.trim();if(!x.tlp)x.tlp=today()}drv(x);
   (x.pr=x.pr||[]).push({id:nid(),tg:today(),at:new Date().toISOString(),x:'Status → '+KWS[st],by:ME.nama,a:1})});tt2('Status: '+KWS[st])}
 async function addPr(id,el='kp_'+id){const e=$(el),v=e?.value.trim();if(!v)return e?.focus();const tg=$(el+'d')?.value||today();
  await mut(id,x=>(x.pr=x.pr||[]).push({id:nid(),tg,at:new Date().toISOString(),x:v,by:ME.nama}));tt2('Progres dicatat');if(FID==id)tForm(id);else setTimeout(()=>$(el)?.focus(),0)}
@@ -749,10 +770,19 @@ const PJC=new Set(),PDO=new Set();
 function papan(){return dfBar('kanb',1)+`<div style="display:flex;justify-content:flex-end;gap:6px;margin:-4px 0 8px"><button class="s" onclick="jsOf(S.t).forEach(j=>PJC.add(j));PDO.clear();PSX.clear();$('kanb').innerHTML=kanB()">⊟ Ciutkan</button><button class="s" onclick="PJC.clear();dfL(1).forEach(x=>PDO.add(x.j+'||'+(x.dj||'')));$('kanb').innerHTML=kanB()">⊞ Buka semua</button></div><div id="kanb">${kanB()}</div><small style="color:var(--m)">Klik baris jenis / detail untuk membukanya, lalu klik kotak status (Pending / Pelaksanaan / Penyusunan laporan / Selesai) untuk menampilkan penugasannya. Seret kartu ke kotak status lain untuk mengubah status (hanya Korwas, ketua tim penugasan itu, atau pembuatnya).</small>`}
 // progres kluster: bobot pending 0, pelaksanaan ⅓, penyusunan laporan ⅔, selesai 1
 const PW={pending:0,proses:1/3,lapor:2/3,selesai:1};
-function pgH(A){const n=A.length,c=s=>A.filter(x=>x.st==s).length,pc=n?Math.round(A.reduce((t,x)=>t+PW[x.st],0)/n*100):0;
- return {bar:`<div><div class="spb" title="${KWO.map(s=>KWS[s]+': '+c(s)).join(' · ')}">${KWO.map(s=>c(s)?`<i class="${s}" style="width:${c(s)/n*100}%"></i>`:'').join('')}</div><span class="pgt"><b style="color:var(--ink)">${pc}%</b> progres · ${c('selesai')} dari ${n} selesai</span></div>`,
+const STC={pending:'#f97316',proses:'#3557d4',lapor:'#8b5cf6',selesai:'#0e9384'},
+ringBg=A=>{const n=A.length;if(!n)return 'background:#e8edf5';let a=0;return 'background:conic-gradient('+[...KWO].reverse().map(s=>{const p=A.filter(x=>x.st==s).length/n*100,r=`${STC[s]} ${a}% ${a+p}%`;a+=p;return r}).join(',')+')'},
+pcOf=A=>A.length?Math.round(A.reduce((t,x)=>t+PW[x.st],0)/A.length*100):0;
+function pjGo(j){PJC.delete(j);$('kanb').innerHTML=kanB();const e=document.querySelector(`details.pj[data-j="${CSS.escape(j)}"]`);if(e)e.scrollIntoView({behavior:'smooth',block:'start'})}
+function pgSum(L0){const c=s=>L0.filter(x=>x.st==s).length,J=jsOf(L0),cnt=j=>L0.filter(x=>x.j==j).length,mx=Math.max(1,...J.map(cnt)),pc=pcOf(L0);
+ return `<div class="card pgs"><div class="pgs1"><span class="dn big" style="${ringBg(L0)}" title="${KWO.map(s=>KWS[s]+': '+c(s)).join(' · ')}"><b>${pc}%<small>progres</small></b></span>
+ <div><small style="color:var(--m)">Seluruh penugasan (sesuai filter)</small><div class="pgn">${L0.length}</div><div class="lgv">${KWO.map(s=>`<div><b class="lgc ${s}"></b>${KWS[s]}<b>${c(s)}</b></div>`).join('')}</div></div></div>
+ <div><h3 style="margin:0 0 4px">Penugasan per jenis, menurut status</h3><div class="vc">${J.map(j=>{const A=L0.filter(x=>x.j==j);return `<div onclick="pjGo(this.dataset.j)" data-j="${esc(j)}" style="cursor:pointer" title="${esc(j)} · ${A.length} penugasan · ${pcOf(A)}% progres\n${KWO.map(s=>KWS[s]+': '+A.filter(x=>x.st==s).length).join('\n')}"><b>${A.length}</b><span class="vst" style="height:${A.length/mx*85}%">${[...KWO].reverse().map(s=>{const k=A.filter(x=>x.st==s).length;return k?`<i style="flex:${k};background:${STC[s]}"></i>`:''}).join('')}</span></div>`}).join('')}</div>
+ <div class="vl wr">${J.map(j=>`<div title="${esc(j)}">${esc(j)}<br><small>${pcOf(L0.filter(x=>x.j==j))}%</small></div>`).join('')}</div></div></div>`}
+function pgH(A){const n=A.length,c=s=>A.filter(x=>x.st==s).length,pc=pcOf(A);
+ return {bar:`<div class="pgr"><span class="dn" style="${ringBg(A)}" title="${KWO.map(s=>KWS[s]+': '+c(s)).join(' · ')}"><b>${pc}%</b></span><span class="pgt"><b style="color:var(--ink)">${c('selesai')}</b> dari ${n} selesai<br>progres ${pc}%</span></div>`,
   num:`<span class="pnum">${KWO.map(s=>c(s)?`<span class="st st-${s}">${c(s)} ${KWS[s].toLowerCase()}</span>`:'').join('')}</span>`}}
-function kCard(x){const tl=lapTelat(x),w=x.st=='selesai'?'✓ '+fds(x.ts):tl!==null?`<b style="color:var(--red)">lap. ${tl} hk</b>`:lewatT(x)?'<b style="color:var(--red)">lewat target</b>':umur(x)+' hk';
+function kCard(x){const tl=lapTelat(x),w=x.st=='selesai'?'✓ '+fds(selX(x))+(telatL(x)?` <b style="color:var(--red)">+${telatL(x)} hk</b>`:''):tl!==null?`<b style="color:var(--red)">lap. ${tl} hk</b>`:umur(x)+' hk';
  return `<div class="kcard ${x.st}" ${canEdit(x)?`draggable="true" ondragstart="event.dataTransfer.setData('text/plain','${x.id}')"`:''} onclick="tForm('${x.id}')" title="${esc(x.rc)}${x.aud?'\n🏢 '+esc(x.aud):''}\nTim: ${esc(team(x).join(', '))}"><div class="ttl">${esc(String(x.rc).slice(0,140))}</div><div class="km">${avs(x)}<span>${esc(x.aud||'')}</span>${w}</div>${x.st!='pending'&&x.st!='selesai'&&tAll(x).length?`<div class="km2">📅 ${tglR(x)}</div>`:''}${psEd(x)}</div>`}
 const KMO=new Set(),PSX=new Map();
 // kotak status per rincian: klik untuk menampilkan kartu status itu saja (default: tertutup, kecuali filter status aktif)
@@ -766,8 +796,7 @@ function pxT(e){const k=e.dataset.k,s=e.dataset.s,op=PSX.has(k)?PSX.get(k):(DF.s
 function kanB(){const L0=dfL(1),qa=!!nrm(DF.q).trim(),fs=DF.st,L=fs?L0.filter(x=>x.st==fs):L0;
  const chips=`<div class="sfl"><span class="sfh">Status penugasan:</span>${['',...KWO].map(s=>`<button type="button" class="sfb ${s} ${fs==s?'on':''}" onclick="DF.st='${s}';PSX.clear();$('kanb').innerHTML=kanB()" title="${s?KWD[s]:'Tampilkan semua status'}">${s?KWS[s]:'Semua'}<span>${s?L0.filter(x=>x.st==s).length:L0.length}</span></button>`).join('')}</div>`;
  if(!L.length)return chips+'<div class="card"><small class="mt">Tidak ada penugasan yang cocok dengan filter.</small></div>';
- const P0=pgH(L0);
- return chips+`<div class="card" style="display:grid;grid-template-columns:260px minmax(220px,1fr) 400px;gap:14px;align-items:center;padding:12px 14px"><b>Seluruh penugasan (sesuai filter) · ${L0.length}</b>${P0.bar}${P0.num}</div>`+
+ return chips+pgSum(L0)+
  jsOf(L).map(j=>{const A=L0.filter(x=>x.j==j),ds=dsOf(j,L.filter(x=>x.j==j)),P=pgH(A);
  return `<details class="pj" ${PJC.has(j)?'':'open'} data-j="${esc(j)}" ontoggle="this.open?PJC.delete(this.dataset.j):PJC.add(this.dataset.j)"><summary><span><span class="tag">${esc(j)}</span> ${A.length} penugasan</span>${P.bar}${P.num}</summary><div class="in">
  ${ds.map(d=>{const B=A.filter(x=>(x.dj||'')==d),k=j+'||'+d,Q=pgH(B);return `<details class="pd" ${PDO.has(k)||qa||fs?'open':''} data-k="${esc(k)}" ontoggle="this.open?PDO.add(this.dataset.k):PDO.delete(this.dataset.k)"><summary><span>↳ ${esc(d||'Tanpa detail jenis')} <small style="color:var(--m);font-weight:400">(${B.length})</small></span>${Q.bar}${Q.num}</summary>${kanMini(B,k)}</details>`}).join('')}</div></details>`}).join('')}
@@ -795,25 +824,29 @@ function dafL(){const L=dfL(),q=nrm(DF.q).split(/\s+/).filter(Boolean),qa=!!q.le
 // JADWAL TIM (matriks orang × tanggal) & BEBAN KERJA
 // =====================================================================
 let JM=new Date(),JV=lsG('kwjJV')||'w',KA='',KB='';
+// ---------- grafik: hari penugasan per bulan, per orang, menurut jenis penugasan ----------
+let BJY=new Date().getFullYear();
+const JCP=['#3557d4','#0e9384','#f97316','#8b5cf6','#e11d48','#0891b2','#65a30d','#b45309','#64748b','#db2777'];
+function bulanJ(){const y=String(BJY),ppl=KN(),J0=jsOf(S.t),jc=j=>JCP[J0.indexOf(j)%JCP.length];
+ const R=ppl.map(p=>{const M=[...Array(12)].map(()=>({}));S.t.filter(x=>onTeam(x,p)).forEach(x=>tAll(x).forEach(d=>{if(d.slice(0,4)!=y)return;const o=M[+d.slice(5,7)-1];(o[x.j]=o[x.j]||new Set()).add(d)}));
+  return{p,M:M.map(o=>Object.fromEntries(Object.entries(o).map(([k,v])=>[k,v.size])))}}),
+ sm=o=>Object.values(o).reduce((a,b)=>a+b,0),mx=Math.max(1,...R.flatMap(r=>r.M.map(sm))),J=J0.filter(j=>R.some(r=>r.M.some(o=>o[j])));
+ return `<div class="card"><div class="hd"><h2 style="margin:0">📈 Hari penugasan per bulan</h2><span style="display:flex;gap:6px;align-items:center"><button class="s" onclick="BJY--;rr()">‹</button><b>${y}</b><button class="s" onclick="BJY++;rr()">›</button></span></div>
+ <small style="color:var(--m)">Jumlah tanggal pelaksanaan (kantor + dinas luar) tiap orang per bulan, dipecah menurut jenis penugasan · skala sama untuk semua orang · arahkan kursor ke batang untuk rinciannya</small>
+ <div class="lg" style="margin:8px 0 4px">${J.map(j=>`<b style="background:${jc(j)}"></b>${esc(j)}`).join('')||'<span class="mt">Belum ada tanggal pelaksanaan di tahun ini.</span>'}</div>
+ <div class="hpg">${R.map(r=>{const tot=r.M.reduce((a,o)=>a+sm(o),0);return `<div class="hpc"><div class="hph">${who(r.p)}<small>${tot} hari di ${y}</small></div>
+  <div class="hpb">${r.M.map((o,i)=>{const s=sm(o);return `<div class="hpm" title="${esc(r.p)} · ${BLN[i]} ${y}\n${J.filter(j=>o[j]).map(j=>j+': '+o[j]+' hari').join('\n')||'tidak ada penugasan'}"><b>${s||''}</b><span class="hps" style="height:${s/mx*100}%">${J.filter(j=>o[j]).map(j=>`<i style="flex:${o[j]};background:${jc(j)}"></i>`).join('')}</span></div>`}).join('')}</div>
+  <div class="hpl">${BLN.map(b=>`<span>${b.slice(0,3)}</span>`).join('')}</div></div>`}).join('')}</div>
+ <small style="color:var(--m);display:block;margin-top:6px">Satu tanggal bisa terhitung di dua jenis bila orang itu punya dua penugasan berbeda di hari yang sama.</small></div>`}
 function jadwal(){const tb=`<div class="tabs"><button class="${JV=='w'?'on':''}" onclick="JV='w';lsS('kwjJV','w');rr()">Mingguan</button><button class="${JV=='m'?'on':''}" onclick="JV='m';lsS('kwjJV','m');rr()">Bulanan</button></div>`;
- return tb+(JV=='w'?wkGrid(0)+kosongB():jBulan())+beban()}
-function kosongB(){const t=today(),a=KA||t,b=KB||addD(t,13),days=[];for(let d=a,i=0;d<=b&&i<400;d=addD(d,1),i++)if(!libur(d))days.push(d);
- const R=KN().map(n=>({n,f:days.filter(d=>!tOn(n,d).length)})).sort((p,q)=>q.f.length-p.f.length);
- const grp=f=>{const g=[];f.forEach(d=>{const l=g[g.length-1];if(l&&days.indexOf(d)==days.indexOf(l[l.length-1])+1)l.push(d);else g.push([d])});return g};
- return `<div class="card"><div class="hd"><h2 style="margin:0">🔎 Cari yang kosong</h2><small style="color:var(--m)">untuk membagi penugasan baru</small></div>
- <div class="row" style="max-width:520px"><div><label>Dari</label><input type="date" value="${a}" onchange="KA=this.value;rr()"></div><div><label>Sampai</label><input type="date" value="${b}" onchange="KB=this.value;rr()"></div>${KA||KB?`<button class="x" style="color:var(--m)" onclick="KA=KB='';rr()">↺ 2 minggu ke depan</button>`:''}</div>
- <table class="kosong" style="width:100%;border-collapse:collapse;margin-top:10px"><thead><tr><th style="width:190px">Nama</th><th style="width:150px">Hari kerja kosong</th><th>Tanggal kosong</th></tr></thead><tbody>
- ${R.map(r=>`<tr><td>${who(r.n)}</td><td><b>${r.f.length}</b> <small style="color:var(--m)">dari ${days.length}</small><div class="pb" style="margin:4px 0 0"><div style="width:${days.length?r.f.length/days.length*100:0}%"></div></div></td><td>${grp(r.f).map(g=>`<span class="chip">${g.length>1?`${hr3(g[0])} ${fds(g[0])} – ${hr3(g[g.length-1])} ${fds(g[g.length-1])} · ${g.length} hari`:`${hr3(g[0])} ${fds(g[0])}`}</span>`).join('')||'<small class="mt">Tidak ada hari kosong di rentang ini</small>'}</td></tr>`).join('')}</tbody></table>
- <small style="color:var(--m);display:block;margin-top:6px">Kosong = hari kerja tanpa jadwal pelaksanaan (kantor / dinas luar). Penugasan pending yang belum punya tanggal pelaksanaan tidak dihitung.</small></div>`}
+ return tb+(JV=='w'?wkGrid(0):jBulan())+beban()+bulanJ()}
 function jBulan(){const y=JM.getFullYear(),m=JM.getMonth(),n=new Date(y,m+1,0).getDate(),days=[...Array(n).keys()].map(i=>iso(y,m,i+1)),ppl=KN(),t=today();
  const dc=d=>[libur(d)?'r':'',d==t?'td':''].join(' ');
  const cell=(p,d)=>{const L=tOn(p,d),nl=L.filter(x=>(x.dl||[]).includes(d)).length;if(!L.length)return `<td class="${dc(d)}"></td>`;
   return `<td class="${dc(d)}"><button class="jn n${Math.min(L.length,3)} ${nl?'dl':''}" onclick="jmOpen('${esc(p)}','${d}')" title="${esc(p)} · ${hari(d)}, ${fd(d)}\n${L.map(x=>((x.dl||[]).includes(d)?'🚗 ':'🏢 ')+esc(rcS(x))).join('\n')}">${L.length}</button></td>`};
- const tot=d=>S.t.filter(x=>tAll(x).includes(d)&&ppl.some(p=>onTeam(x,p))).length;
  return `<div class="card"><div class="hd"><button class="s" onclick="JM=new Date(${y},${m-1},1);rr()">‹</button><h2 style="margin:0">${BLN[m]} ${y}</h2><button class="s" onclick="JM=new Date(${y},${m+1},1);rr()">›</button></div>
  <div class="jw" style="margin-top:10px"><table class="jm3" style="width:${172+n*36}px"><thead><tr><th class="nm"></th>${days.map(d=>`<th class="${dc(d)}" title="${hari(d)}${H()[d]?' · '+esc(H()[d]):''}">${+d.slice(8)}<br><span style="font-weight:400">${hr3(d).slice(0,2)}</span></th>`).join('')}</tr></thead>
- <tbody>${ppl.map(p=>`<tr><td class="nm">${who(p)}</td>${days.map(d=>cell(p,d)).join('')}</tr>`).join('')}
- <tr class="tt"><td class="nm"><small>Penugasan berjalan</small></td>${days.map(d=>{const k=tot(d);return `<td class="${dc(d)}">${k?`<button class="jt" onclick="jmOpen('','${d}')" title="Lihat semua penugasan ${hari(d)}, ${fd(d)}">${k}</button>`:''}</td>`}).join('')}</tr></tbody></table></div>
+ <tbody>${ppl.map(p=>`<tr><td class="nm">${who(p)}</td>${days.map(d=>cell(p,d)).join('')}</tr>`).join('')}</tbody></table></div>
  <div class="lg">Angka = jumlah penugasan orang itu di hari tersebut · klik angka untuk melihat kartu penugasannya<b style="background:#d6f3ec;border:1px solid #0e9384"></b>ada dinas luar<b style="background:#fdf3f2;border:1px solid #f3c7c3"></b>Libur</div></div>`}
 function jmOpen(p,d){const L=S.t.filter(x=>(p?onTeam(x,p):KN().some(q=>onTeam(x,q)))&&tAll(x).includes(d)).sort((a,b)=>KWO.indexOf(a.st)-KWO.indexOf(b.st)||srt(a,b));tcSet(L);
  const kc=x=>{const A=tAll(x),l=(x.dl||[]).includes(d),i=A.indexOf(d)+1,tl=lapTelat(x);
@@ -849,14 +882,15 @@ function tForm(id=null,pre={}){const x=id?fT(id):{st:'pending',tsm:today(),dal:d
  <div class="sec"><h3>Tim</h3><div class="row"><div><label>Pengendali teknis (Dalnis)</label><input id="f_dal" list="pgl" autocomplete="off" value="${v('dal')}"></div><div><label>Ketua tim</label><input id="f_kt" list="pgl" autocomplete="off" value="${v('kt')}" placeholder="${esc(kts.join(' / '))}"></div></div>
  <label>Anggota — ketik lalu pilih nama (boleh pegawai korwas lain)</label><div id="f_angc"></div>
  <div class="row"><input id="f_angi" list="pgl" placeholder="Ketik nama anggota…" autocomplete="off" onkeydown="if(event.key=='Enter'){event.preventDefault();angA()}" oninput="if(NAMES().includes(this.value))angA()"><button type="button" class="s" onclick="angA()">Tambah</button></div></div>
- <div class="sec"><h3>Status</h3><div class="row"><div><label>Status</label><select id="f_st" onchange="$('f_psw').style.display=/proses|lapor/.test(this.value)?'':'none'">${KWO.map(s=>`<option value="${s}" ${x.st==s?'selected':''} title="${KWD[s]}">${KWS[s]}</option>`).join('')}</select></div><div><label>Target selesai</label><input type="date" id="f_tgt" value="${v('tgt')}"></div></div>
- <div class="row"><div><label>Mulai dilaksanakan</label><input type="date" id="f_tm" value="${v('tm')}"></div><div><label>Tanggal selesai</label><input type="date" id="f_ts" value="${v('ts')}"></div></div>
+ <div class="sec"><h3>Status</h3><div class="row"><div><label>Status</label><select id="f_st" onchange="$('f_psw').style.display=/proses|lapor/.test(this.value)?'':'none';tInfo()">${KWO.map(s=>`<option value="${s}" ${x.st==s?'selected':''} title="${KWD[s]}">${KWS[s]}</option>`).join('')}</select></div></div>
+ <div id="f_inf" class="tinf"></div>
  <div class="row" id="f_psw" style="${psOn(x)?'':'display:none'}"><div><label>Progres tahap</label><select id="f_ps"><option value="">— belum diisi —</option>${PSO.map(([k,l])=>`<option value="${k}" ${x.ps==k?'selected':''}>${l}</option>`).join('')}</select></div><div style="flex:1.6"><label>Catatan progres</label><input id="f_psn" value="${v('psn')}" placeholder="mis. data dari satker dijanjikan Jumat"></div></div>
  <label>Keterangan / kendala</label><textarea id="f_ket" rows="2" placeholder="mis. menunggu jadwal dari Inspektur, menunggu data dari satker">${v('ket')}</textarea></div>
  </div><div>
  <div id="f_dpw">${LK('f_')}</div>
  <div class="sec"><h3>Administrasi & laporan</h3><div class="row"><div><label>Nomor ND</label><input id="f_nd" value="${v('nd')}"></div><div><label>Nomor SPT</label><input id="f_spt" value="${v('spt')}"></div></div>
- <div class="row"><div><label>Nomor laporan</label><input id="f_ln" value="${v('ln')}"></div><div style="flex:0 0 160px"><label>Tanggal laporan</label><input type="date" id="f_tlp" value="${v('tlp')}"></div></div>
+ <div class="row"><div><label>Nomor laporan</label><input id="f_ln" value="${v('ln')}"></div><div style="flex:0 0 160px"><label>Tanggal laporan</label><input type="date" id="f_tlp" value="${v('tlp')}" onchange="tInfo()"></div></div>
+ <div class="row"><div><label>Nomor surat pengantar laporan</label><input id="f_nsp" value="${v('nsp')}"></div><div style="flex:0 0 160px"><label>Tanggal surat pengantar</label><input type="date" id="f_tsp" value="${v('tsp')}"></div></div>
  <label>Link folder bersama (Drive / OneDrive)</label><input id="f_fo" type="url" placeholder="https://" value="${v('fo')}">${x.fo?` <a href="${esc(x.fo)}" target="_blank" rel="noopener">📁 Buka folder</a>`:''}</div>
  </div></div></fieldset>
  ${ro?'':`<button class="p" onclick="tSave()">${id?'Simpan perubahan':'Simpan'}</button> <button class="s" onclick="clEd()">Batal</button> <small style="color:var(--m)">Ctrl+S untuk simpan</small>`}
@@ -864,19 +898,26 @@ function tForm(id=null,pre={}){const x=id?fT(id):{st:'pending',tsm:today(),dal:d
  ${P.map(p=>`<div class="lgn"><div class="hd"><small>${hari(p.tg)}, ${fd(p.tg)} · <b>${esc(p.by||'—')}</b></small>${(p.by==ME.nama||isMgr())&&canProg(x)?`<button class="x" onclick="delPr('${x.id}',${p.id})">✕</button>`:''}</div>${p.a?'<i>'+esc(p.x)+'</i>':esc(p.x)}</div>`).join('')||'<small class="mt">Belum ada catatan progres.</small>'}
  ${canDel(x)?`<div style="margin-top:14px;text-align:right"><button class="x" onclick="tDel('${x.id}')">Hapus penugasan ini</button></div>`:''}`:''}</div></div>`;
  document.body.style.overflow='hidden';angR();
- const o=/dinas/i.test(x.lok||''),K=x.dk||[],Ld=x.dl||[];dpOpen('f_k',K);dpOpen('f_l',Ld);$('f_ck_k').checked=K.length>0;$('f_ck_l').checked=Ld.length>0;lokV('f_');
+ const o=/dinas/i.test(x.lok||''),K=x.dk||[],Ld=x.dl||[];dpOpen('f_k',K);dpOpen('f_l',Ld);$('f_ck_k').checked=K.length>0;$('f_ck_l').checked=Ld.length>0;lokV('f_');tInfo();
  if(ro)$('f_dpw').querySelectorAll('input,button').forEach(e=>e.disabled=true);
  setTimeout(()=>(id?null:$('f_rc'))?.focus(),0)}
+// ringkasan tanggal otomatis di form (ikut berubah saat tanggal pelaksanaan / tanggal laporan diubah)
+function tInfo(){const e=$('f_inf');if(!e||!DP.f_k||!DP.f_l)return;
+ const A=[...new Set([...($('f_ck_k')?.checked?DP.f_k.d:[]),...($('f_ck_l')?.checked?DP.f_l.d:[])])].sort(),a=A[0]||'',b=A[A.length-1]||'',st=$('f_st').value,tl=$('f_tlp').value,t=today(),
+ sel=st=='selesai'?(tl||t):'',ref=tl||(st=='selesai'?t:''),late=b&&ref&&ref>b?hk(b,ref):0,pend=!tl&&st!='selesai'&&b&&b<t?hk(b,t):0;
+ const box=(l,v,s)=>`<div><small>${l}</small><b>${v||'<span class="mt">—</span>'}</b>${s?`<small>${s}</small>`:''}</div>`;
+ e.innerHTML=box('Mulai',a?fd(a):'','hari pertama pelaksanaan')+box('Target selesai',b?fd(b):'','hari terakhir pelaksanaan')+box('Selesai',sel?fd(sel):'',st=='selesai'?(tl?'= tanggal laporan':'tgl laporan belum diisi → hari ini'):'= tanggal laporan')+
+ `<div class="tinfs ${late||pend?'hi':b&&ref?'ok':''}">${!b?'Pilih tanggal pelaksanaan di kanan — mulai & target dihitung otomatis.':late?`📝 Laporan terlambat <b>${late} hari kerja</b> dari hari terakhir pelaksanaan`:pend?`⏳ Laporan belum terbit, sudah <b>${pend} hari kerja</b> sejak hari terakhir pelaksanaan`:ref?'✓ Laporan tepat waktu':'Target = hari terakhir pelaksanaan'}</div>`}
 async function tSave(){if($('f_angi')?.value.trim())angA();const v=k=>($('f_'+k)?.value||'').trim();
- const d={j:v('j'),dj:v('dj'),tsm:v('tsm'),ns:v('ns'),rc:v('rc'),aud:v('aud'),lhp:v('lhp'),dal:v('dal'),kt:v('kt'),ang:[...FANG],st:v('st'),tm:v('tm'),tgt:v('tgt'),ts:v('ts'),ket:v('ket'),nd:v('nd'),spt:v('spt'),ln:v('ln'),tlp:v('tlp'),fo:v('fo'),ps:v('ps'),psn:v('psn'),
+ const d={j:v('j'),dj:v('dj'),tsm:v('tsm'),ns:v('ns'),rc:v('rc'),aud:v('aud'),lhp:v('lhp'),dal:v('dal'),kt:v('kt'),ang:[...FANG],st:v('st'),ket:v('ket'),nd:v('nd'),spt:v('spt'),ln:v('ln'),tlp:v('tlp'),nsp:v('nsp'),tsp:v('tsp'),fo:v('fo'),ps:v('ps'),psn:v('psn'),
   dk:$('f_ck_k').checked?[...DP.f_k.d].sort():[],dl:$('f_ck_l').checked?[...DP.f_l.d].sort():[]};
  if(!d.j||!d.tsm||!d.rc)return alert('Isi jenis, tanggal surat masuk, dan rincian penugasan.');
- if(d.st=='proses'&&!d.tm)d.tm=today();if(d.st=='selesai'&&!d.ts)d.ts=today();if(d.st!='selesai')d.ts='';if(d.ln&&!d.tlp&&d.st=='selesai')d.tlp=d.ts;
+ if(d.ln&&!d.tlp&&d.st=='selesai')d.tlp=today();
  {const o=FID?fT(FID):null;if(o&&o.st!=d.st&&d.ps==(o.ps||'')&&d.psn==(o.psn||'')){d.ps='';d.psn=''}if(!psOn(d)){d.ps='';d.psn=''}}
  const now=new Date().toISOString();let x;
  if(FID){x={...fT(FID)};if(x.st!=d.st)x.pr=[...(x.pr||[]),{id:nid(),tg:today(),at:now,x:'Status → '+KWS[d.st],by:ME.nama,a:1}];if(psOn(d)&&(d.ps||d.psn)&&(d.ps!=(x.ps||'')||d.psn!=(x.psn||'')))x.pr=[...(x.pr||[]),{id:nid(),tg:today(),at:now,x:'Progres '+KWS[d.st].toLowerCase()+' → '+[PSL[d.ps],d.psn].filter(Boolean).join(' — '),by:ME.nama,a:1}];Object.assign(x,d)}
  else x={id:uuid(),...d,cb:ME.email,cbn:ME.nama,ca:today(),pr:[{id:nid(),tg:today(),at:now,x:'Penugasan dicatat',by:ME.nama,a:1}]};
- const ok=await putT(x);if(!ok)return FID&&tForm(FID);
+ drv(x);const ok=await putT(x);if(!ok)return FID&&tForm(FID);
  // nama baru (mis. pegawai korwas lain) otomatis masuk daftar pilihan
  const nw=team(x).filter(n=>!NAMES().includes(n));if(nw.length){S.cfg.pgw=[...(S.cfg.pgw||[]),...nw];saveCfg()}
  FID=null;clEd();tt2('Penugasan tersimpan')}
@@ -899,7 +940,7 @@ function dpRender(k){const x=DP[k],y=x.m.getFullYear(),m=x.m.getMonth(),n=new Da
 const dpN=(k,n)=>{const x=DP[k];x.m=new Date(x.m.getFullYear(),x.m.getMonth()+n,1);dpRender(k)};
 function dpP(k){const x=DP[k];x.d.sort();const s0=new Set(x.d);document.querySelectorAll(`#${k}dp .dc`).forEach(e=>e.classList.toggle('on',s0.has(e.dataset.k)));
  const g=x.g=[];x.d.forEach(d=>{const l=g[g.length-1];if(l&&Math.round((D(d)-D(l[l.length-1]))/864e5)==1)l.push(d);else g.push([d])});
- $(k+'ch').innerHTML=g.map((a,i)=>{const f=a[0],z=a[a.length-1],w=a.some(we);return `<span class="chip ${w?'we':''}">${a.length>1?`${fd(f)} – ${fd(z)} (${a.length} hari)`:`${hari(f)}, ${fd(f)}`}${w?' · termasuk akhir pekan':''} <button type="button" class="x" onclick="dpG('${k}',${i})">✕</button></span>`}).join('')+(x.d.length?`<div class="lg">${x.d.length} hari dipilih</div>`:'')}
+ $(k+'ch').innerHTML=g.map((a,i)=>{const f=a[0],z=a[a.length-1],w=a.some(we);return `<span class="chip ${w?'we':''}">${a.length>1?`${fd(f)} – ${fd(z)} (${a.length} hari)`:`${hari(f)}, ${fd(f)}`}${w?' · termasuk akhir pekan':''} <button type="button" class="x" onclick="dpG('${k}',${i})">✕</button></span>`}).join('')+(x.d.length?`<div class="lg">${x.d.length} hari dipilih</div>`:'');if(/^f_/.test(k))tInfo()}
 const dpG=(k,i)=>{const x=DP[k];x.d=x.d.filter(d=>!x.g[i].includes(d));dpP(k)},dpT=(k,q)=>{const x=DP[k],i=x.d.indexOf(q);i<0?x.d.push(q):x.d.splice(i,1);dpP(k)};
 function dpD(e,k){const c=e.target.closest('.dc');if(!c||c.disabled)return;const x=DP[k];x.a=c.dataset.k;x.b=[...x.d];x.m1=x.b.includes(x.a)?0:1;x.on=1;dpR(k,x.a);
  const off=()=>x.on=0;addEventListener('pointerup',off,{once:true});addEventListener('pointercancel',off,{once:true})}
@@ -923,7 +964,7 @@ function rkData(){const[a,b,lbl]=rkRange(),q=nrm(RK.q).trim();
  const L=S.t.filter(x=>{const t=x.tsm||'';const inP=RK.das=='tsm'?t>=a&&t<=b:t<=b&&!(x.st=='selesai'&&x.ts&&x.ts<a);
   return inP&&RK.st[x.st]&&!RK.xj.includes(x.j)&&!RK.xd.includes(x.j+'||'+(x.dj||''))&&(!q||qOf(x,q))}).sort((p,r)=>KWO.indexOf(p.st)-KWO.indexOf(r.st)||String(p.j).localeCompare(String(r.j))||String(p.dj||'').localeCompare(String(r.dj||''))||srt(p,r));return{L,lbl}}
 function rkLine(x){const c=RK.col,m=[x.tsm?'surat masuk '+fd(x.tsm):'',c.ns&&x.ns?'No. '+x.ns:'',c.aud&&x.aud?x.aud:'',c.tim&&x.kt?'katim '+x.kt+((x.ang||[]).length?', anggota '+x.ang.join(', '):''):'',
- c.wk?(x.st=='selesai'?(x.ts?'selesai '+fd(x.ts):'')+(x.ln?' ('+x.ln+')':''):(x.st!='pending'&&x.tm?'mulai '+fd(x.tm)+', ':'')+umur(x)+' hari kerja sejak masuk'+(x.tgt?', target '+fd(x.tgt):'')):''].filter(Boolean),p=c.pr?prL(x).find(z=>!z.a):null;
+ c.wk?(x.st=='selesai'?(selX(x)?'selesai '+fd(selX(x)):'')+(x.ln?' ('+x.ln+')':'')+(telatL(x)?', laporan terlambat '+telatL(x)+' hari kerja':''):(x.st!='pending'&&mulaiX(x)?'mulai '+fd(mulaiX(x))+', ':'')+umur(x)+' hari kerja sejak masuk'+(akhir(x)?', target '+fd(akhir(x)):'')):''].filter(Boolean),p=c.pr?prL(x).find(z=>!z.a):null;
  if(psOn(x)&&(x.ps||x.psn))m.push('progres: '+[PSL[x.ps],x.psn].filter(Boolean).join(' – '));return{t:x.rc,m:m.join('; '),p:p?`${fd(p.tg)}: ${p.x}`:'',k:x.ket||''}}
 const rkSub=A=>{const o=[];jsOf(A).forEach(j=>[...new Set(A.filter(x=>x.j==j).map(x=>x.dj||''))].forEach(d=>o.push({h:j+(d?' – '+d:''),items:A.filter(x=>x.j==j&&(x.dj||'')==d)})));return o};
 function rkGroups(L){if(RK.grp=='st')return KWO.filter(s=>RK.st[s]).map(s=>{const A=L.filter(x=>x.st==s);return{h:KWS[s],n:A.length,sub:rkSub(A)}});
@@ -956,8 +997,8 @@ function rkText(){const{L,lbl}=rkData(),M=rkMx(L);
  rkGroups(L).forEach((g,gi)=>{s+=`\n*${String.fromCharCode(65+gi)}. ${g.h.toUpperCase()} (${g.n})*\n`;if(!g.n)s+='-\n';g.sub.forEach(b=>{s+=`_${b.h}_\n`;b.items.forEach((x,i)=>{const r=rkLine(x);s+=`${i+1}. ${r.t.replace(/\s*\n\s*/g,' ')}${b.st?' ['+KWS[x.st]+']':''}${r.m?` (${r.m})`:''}\n${r.p?`   Progres: ${r.p}\n`:''}`})})});return s}
 const rkCopy=async()=>{const s=rkText();try{await navigator.clipboard.writeText(s);tt2('Rekap disalin — tinggal tempel di WA / email')}catch(e){prompt('Salin teks berikut:',s)}};
 const xRow=(x,i)=>({'No':i+1,'Status':KWS[x.st],'Progres tahap':psOn(x)?PSL[x.ps]||'':'','Catatan progres tahap':psOn(x)?x.psn||'':'','Jenis':x.j,'Detail jenis':x.dj||'','Tanggal surat masuk':x.tsm?fd(x.tsm):'','Nomor surat':x.ns||'','Rincian':x.rc,'Satker / auditi':x.aud||'','Nomor LHP':x.lhp||'','Dalnis':x.dal||'','Ketua tim':x.kt||'','Anggota':(x.ang||[]).join(', '),
- 'Hari kantor':(x.dk||[]).length||'','Hari dinas luar':(x.dl||[]).length||'','Pelaksanaan':tAll(x).length?fd(tAll(x)[0])+(tAll(x).length>1?' s.d. '+fd(akhir(x)):''):'','Mulai':x.tm?fd(x.tm):'','Target':x.tgt?fd(x.tgt):'','Selesai':x.ts?fd(x.ts):'',
- 'Umur (hari kerja)':x.st=='selesai'?'':umur(x),'Nomor ND':x.nd||'','Nomor SPT':x.spt||'','Nomor laporan':x.ln||'','Tanggal laporan':x.tlp?fd(x.tlp):'','Progres terakhir':(prL(x).find(z=>!z.a)||{}).x||'','Keterangan':x.ket||'','Link folder':x.fo||''});
+ 'Hari kantor':(x.dk||[]).length||'','Hari dinas luar':(x.dl||[]).length||'','Pelaksanaan':tAll(x).length?fd(tAll(x)[0])+(tAll(x).length>1?' s.d. '+fd(akhir(x)):''):'','Mulai':mulaiX(x)?fd(mulaiX(x)):'','Target selesai':akhir(x)?fd(akhir(x)):'','Selesai':selX(x)?fd(selX(x)):'','Laporan terlambat (hari kerja)':telatL(x)||'',
+ 'Umur (hari kerja)':x.st=='selesai'?'':umur(x),'Nomor ND':x.nd||'','Nomor SPT':x.spt||'','Nomor laporan':x.ln||'','Tanggal laporan':x.tlp?fd(x.tlp):'','Nomor surat pengantar':x.nsp||'','Tanggal surat pengantar':x.tsp?fd(x.tsp):'','Progres terakhir':(prL(x).find(z=>!z.a)||{}).x||'','Keterangan':x.ket||'','Link folder':x.fo||''});
 function rkXl(){const{L,lbl}=rkData(),M=rkMx(L),w=XLSX.utils.book_new();
  XLSX.utils.book_append_sheet(w,XLSX.utils.aoa_to_sheet([[RK.jd],['Periode: '+lbl+' · keadaan per '+fd(today())],[],['Jenis penugasan',...M.S_.map(s=>KWS[s]),'Jumlah'],...M.J.map(j=>[j,...M.S_.map(s=>M.c(j,s)),M.c(j)]),['Jumlah',...M.S_.map(s=>M.c(null,s)),L.length]]),'Ringkasan');
  XLSX.utils.book_append_sheet(w,XLSX.utils.json_to_sheet(L.length?L.map(xRow):[{}]),'Rincian');XLSX.writeFile(w,'Rekap-Korwas-Jabal-'+tgl()+'.xlsx')}
