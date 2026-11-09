@@ -335,6 +335,62 @@ details.pgd .in{padding:0 12px 8px;background:#fff;border-top:1px solid #f6dcc4;
 .kmore{width:100%;font-size:12px;padding:5px;margin-top:2px}
 @media (max-width:900px){.kan{grid-template-columns:1fr 1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* ===== progres tahap (dropdown + catatan) ===== */
+.ps{display:inline-block;font:600 11.5px var(--f);border-radius:10px;padding:2px 8px;white-space:nowrap}
+select.ps{width:auto;border:0;padding:4px 6px;cursor:pointer;border-radius:8px}
+.ps-none{background:#f1f5f9;color:#64748b}.ps-tim{background:#e0ecff;color:#1e3a8a}.ps-data{background:#fff1d6;color:#92400e}.ps-katim{background:#ede4fb;color:#5b21b6}.ps-dalnis{background:#dcf5ee;color:#065f46}
+.pse{display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap}.pse input{flex:1;min-width:110px;width:auto;padding:4px 8px;font-size:12.5px;border-radius:8px}
+.psc{display:flex;gap:6px;align-items:center;margin-top:4px;min-width:0;font-size:12px;max-width:100%}.psn{color:#475569;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-style:italic;min-width:0}
+.ar2 .psc{margin-top:0}.psw{margin-top:8px}
+/* ===== dashboard: kartu per orang ===== */
+.pg6{grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.pc{--pc:#98a2a8;border:1px solid var(--l);border-top:5px solid var(--pc);border-radius:14px;padding:12px 14px;background:linear-gradient(180deg,color-mix(in srgb,var(--pc) 10%,#fff),#fff 90px);gap:6px}
+.pch{display:flex;gap:10px;align-items:center}.pch .pav{font-style:normal;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--pc);color:#fff;font:700 13px var(--f);flex:none;box-shadow:0 0 0 3px #fff}
+.pch b{display:block;font-size:14.5px;line-height:1.2}.pch small{color:var(--m);font-size:12px}
+.ps2{margin-top:4px}.ps2 h4{margin:6px 0 3px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#475569;display:flex;justify-content:space-between;align-items:center}
+.ps2 h4 span{background:color-mix(in srgb,var(--pc) 16%,#fff);color:color-mix(in srgb,var(--pc) 80%,#000);border-radius:9px;padding:0 8px;font-size:11.5px}
+.pi{border:1px solid #edf0f5;border-left:3px solid var(--pc);border-radius:9px;padding:6px 9px;margin:4px 0;cursor:pointer;background:#fff;min-width:0}
+.ps2.lapor .pi{border-left-style:dashed}.pi:hover{border-color:color-mix(in srgb,var(--pc) 55%,#fff);box-shadow:var(--sh)}
+.pi1{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pi2{font-size:12px;color:var(--m)}.more{font-size:12px}
+/* ===== dashboard: per tim ===== */
+.tg2{display:grid;grid-template-columns:repeat(auto-fill,minmax(520px,1fr));gap:12px;margin-top:10px}
+.tgc{--pc:#98a2a8;border:1px solid var(--l);border-left:5px solid var(--pc);border-radius:12px;padding:10px 12px;background:#fff}
+.tgh{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:space-between}.tgn{display:flex;gap:5px}
+.tgb{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}.tgb h4{margin:0 0 2px;font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:.05em}
+.tr2{border-top:1px solid #eef1f6;padding:6px 0;cursor:pointer;min-width:0}.tgb h4+.tr2{border-top:0}.tr2:hover .ar-t{color:var(--ink2)}
+.tr2a{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tr2b{font-size:12px;color:var(--m)}
+/* ===== jadwal tim: grafik beban ===== */
+.bcg{display:grid;grid-template-columns:1.5fr 1fr;gap:24px}.bcg h3{margin-top:8px}
+.bc-r{display:grid;grid-template-columns:200px 1fr;gap:10px;align-items:center;padding:5px 6px;cursor:pointer;border-radius:8px}.bc-r:hover{background:#f6f8fc}
+.bc-r.ax{cursor:default;padding-top:0}.bc-r.ax:hover{background:none}
+.bc-t{display:flex;align-items:center;gap:8px}.bc-t>b{width:22px;text-align:right;font-size:13px}
+.bc-g{position:relative;flex:1;height:24px}.bc-g u{position:absolute;top:-4px;bottom:-4px;width:1px;background:#e9edf4}
+.bc-r.ax .bc-g{height:14px}.bc-g>span{position:absolute;transform:translateX(-50%);font-size:11px;color:var(--m)}
+.bc-b{position:relative;display:flex;height:24px;border-radius:6px;overflow:hidden;min-width:3px;background:#e8edf5}
+.bc-b i{display:grid;place-items:center;color:#fff;font:600 11.5px var(--f);font-style:normal;min-width:16px}
+.bc-b i.pending,.lg b.lgc.pending{background:#f97316}.bc-b i.proses,.lg b.lgc.proses{background:#3557d4}.bc-b i.lapor,.lg b.lgc.lapor{background:#8b5cf6}
+.vc{display:flex;align-items:stretch;gap:12px;height:190px;padding:6px 4px 0;border-bottom:1px solid var(--l);background:repeating-linear-gradient(to top,#eef1f6 0 1px,transparent 1px 38px)}.vc.sm{height:130px}
+.vc>div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}.vc b{font-size:13px;margin-bottom:3px}
+.vc .vb{display:block;width:70%;max-width:44px;border-radius:6px 6px 0 0;min-height:2px}
+.vl{display:flex;gap:12px;padding:4px 4px 0}.vl>div{flex:1;text-align:center;font-size:11.5px;color:var(--m);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ===== papan status: filter + kotak status ===== */
+.sfl{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 10px}.sfh{font-size:12.5px;color:var(--m);font-weight:600;margin-right:2px}
+.sfb{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--l);background:#fff;border-radius:20px;padding:6px 12px;font:600 13px var(--f);color:#334155;cursor:pointer}
+.sfb span{background:#eef1f7;border-radius:10px;padding:0 7px;font-size:12px}.sfb:hover{border-color:#c3d0f2}
+.sfb.pending:before,.sfb.proses:before,.sfb.lapor:before,.sfb.selesai:before{content:'';width:8px;height:8px;border-radius:50%}
+.sfb.pending:before{background:#f97316}.sfb.proses:before{background:#3557d4}.sfb.lapor:before{background:#8b5cf6}.sfb.selesai:before{background:#0e9384}
+.sfb.on{background:var(--ink);color:#fff;border-color:var(--ink)}.sfb.on span{background:#ffffff33;color:#fff}.sfb.on:before{box-shadow:0 0 0 2px #fff}
+.stl{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px}
+.stc{display:flex;flex-direction:column;align-items:flex-start;gap:1px;border:1px solid var(--l);border-top:4px solid;border-radius:11px;background:#fff;padding:8px 12px;cursor:pointer;font:inherit;text-align:left;color:var(--t);transition:box-shadow .12s,transform .12s}
+.stc small{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#475569;font-weight:700}.stc b{font-size:22px;line-height:1.15}.stc .stx{font-size:11.5px;color:var(--m);min-height:15px}
+.stc:hover{box-shadow:var(--sh2);transform:translateY(-1px)}.stc.z{opacity:.5}
+.stc.pending{border-top-color:#f97316}.stc.pending b{color:#c2410c}.stc.pending.on{background:#fff5ed;border-color:#f97316}
+.stc.proses{border-top-color:#3557d4}.stc.proses b{color:#23409a}.stc.proses.on{background:#eef2ff;border-color:#3557d4}
+.stc.lapor{border-top-color:#8b5cf6}.stc.lapor b{color:#6d28d9}.stc.lapor.on{background:#f5f0ff;border-color:#8b5cf6}
+.stc.selesai{border-top-color:#0e9384}.stc.selesai b{color:#0b6b52}.stc.selesai.on{background:#ecfaf5;border-color:#0e9384}
+.kgr{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;padding:0 10px 10px}.kgr .kcard{margin:0}.kgr .kmore{grid-column:1/-1}
+.kcard .km2{font-size:11.5px;color:var(--m);margin-top:2px}.kcard .pse select{font-size:11.5px}.kcard .pse input{font-size:12px;padding:3px 7px}
+@media (max-width:900px){.stl{grid-template-columns:1fr 1fr}.bcg,.tgb{grid-template-columns:1fr}.tg2{grid-template-columns:1fr}.bc-r{grid-template-columns:120px 1fr}}
 </style></head><body>
 <nav id="nv"></nav><main id="v"></main><div id="ov"></div><datalist id="pgl"></datalist><div id="tt" style="position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 14px;border-radius:8px;display:none;z-index:50;font-size:14px"></div>
 <script>
@@ -432,6 +488,12 @@ tglP=x=>{const A=tAll(x);if(!A.length)return x.tm?`<small>mulai ${fd(x.tm)}</sma
  return `${A.length>1?fds(A[0])+' – '+fd(akhir(x)):fd(A[0])}<br><small style="color:var(--m)">${[dl?dl+' hr DL':'',dk?dk+' hr kantor':''].filter(Boolean).join(', ')}</small>`};
 const selSt=x=>canEdit(x)?`<select class="st st-${x.st}" onchange="setSt('${x.id}',this.value)" title="Ubah status">${KWO.map(s=>`<option value="${s}" ${x.st==s?'selected':''}>${KWS[s]}</option>`).join('')}</select>`:badge(x.st);
 
+// ---------- PROGRES TAHAP (pelaksanaan & penyusunan laporan): pilihan + catatan ----------
+const PSO=[['tim','Sedang dikerjakan tim'],['data','Menunggu data'],['katim','Cek katim'],['dalnis','Cek dalnis']],PSL=Object.fromEntries(PSO),
+psOn=x=>x.st=='proses'||x.st=='lapor',
+psChip=x=>psOn(x)&&(x.ps||x.psn)?`<span class="psc">${x.ps?`<span class="ps ps-${x.ps}">${esc(PSL[x.ps]||x.ps)}</span>`:''}${x.psn?`<span class="psn" title="${esc(x.psn)}">${esc(x.psn)}</span>`:''}</span>`:'',
+psEd=x=>!psOn(x)?'':canProg(x)?`<div class="pse" onclick="event.stopPropagation()" onpointerdown="const c=this.closest('.kcard');if(c&&c.draggable){c.draggable=false;this.dataset.dr=1}" onfocusout="const c=this.closest('.kcard');if(c&&this.dataset.dr)c.draggable=true"><select class="ps ps-${x.ps||'none'}" onchange="setPs('${x.id}',this.value)" title="Progres ${KWS[x.st].toLowerCase()}"><option value="">— progres —</option>${PSO.map(([k,l])=>`<option value="${k}" ${x.ps==k?'selected':''}>${l}</option>`).join('')}</select><input value="${esc(x.psn||'')}" placeholder="catatan progres…" title="Catatan progres (Enter untuk simpan)" onchange="setPs('${x.id}',undefined,this.value)" onkeydown="if(event.key=='Enter')this.blur()"></div>`:(psChip(x)||'<small class="mt">progres belum diisi</small>');
+
 // =====================================================================
 // PENYIMPANAN: Supabase per baris, atau localStorage di mode demo
 // =====================================================================
@@ -527,7 +589,7 @@ function wkGrid(dash){const w0=addD(monday(today()),WK*7),t=today(),P=KN(),
  const head=`<div class="wnav"><h2>${dash?'📅 Jadwal tim — ':''}${wkLbl(WK)}</h2><span class="wl2">${fds(w0)} – ${fd(addD(w0,4))}</span><span class="sp2"></span>
   <button class="s" onclick="WK--;rr()" title="Minggu sebelumnya">‹</button>${WK?`<button class="s" onclick="WK=0;rr()">Minggu ini</button>`:''}<button class="s" onclick="WK++;rr()" title="Minggu berikutnya">›</button>${dash?`<button class="s" onclick="go('jadwal')">Cari yang kosong →</button>`:''}</div>`;
  const cell=(p,d)=>{const L=tOn(p,d),cls=[d==t?'td':'',libur(d)?'lb':'',d<t?'ps':''].join(' '),dl=L.filter(x=>(x.dl||[]).includes(d)).length;
-  const body=L.length?L.map(x=>{const l=(x.dl||[]).includes(d);return `<span class="wi ${l?'l':'k'} ${l&&dl>1?'l2':''}" onclick="tForm('${x.id}')" title="${l?'Dinas luar':'Di kantor'} · ${esc(nmT(x))}${x.aud?' · '+esc(x.aud):''}\n${esc(x.rc)}\nStatus: ${KWS[x.st]}">${l?'🚗':'🏢'} ${esc(lbT(x))}</span>`}).join('')
+  const body=L.length?L.map(x=>{const l=(x.dl||[]).includes(d);return `<span class="wi ${l?'l':'k'} ${l&&dl>1?'l2':''}" onclick="tForm('${x.id}')" title="${l?'Dinas luar':'Di kantor'} · ${esc(nmT(x))}${x.aud?' · '+esc(x.aud):''}\n${esc(x.rc)}\nStatus: ${KWS[x.st]}${psOn(x)&&(x.ps||x.psn)?'\nProgres: '+esc([PSL[x.ps],x.psn].filter(Boolean).join(' — ')):''}">${l?'🚗':'🏢'} ${esc(lbT(x))}</span>`}).join('')
    :libur(d)?`<span class="offd">${esc(H()[d]||'Libur')}</span>`:d<t?'':'<span class="free">kosong</span>';
   return `<td class="${cls}">${body}</td>`};
  const freeN=d=>libur(d)?null:P.filter(p=>!tOn(p,d).length).length;
@@ -536,18 +598,32 @@ function wkGrid(dash){const w0=addD(monday(today()),WK*7),t=today(),P=KN(),
  <thead><tr><th>Nama</th>${D7.map(d=>{const f=freeN(d);return `<th class="${d==t?'td':''} ${libur(d)?'lb':''}">${hr3(d)}, ${fds(d)}${d==t?' · hari ini':''}${f===null?`<small class="no">${esc(H()[d]||'libur')}</small>`:d<t?'<small class="no">&nbsp;</small>':`<small class="${f?'':'no'}">${f?f+' orang kosong':'semua terisi'}</small>`}</th>`}).join('')}</tr></thead>
  <tbody>${P.map(p=>`<tr><td class="nm">${who(p)}${anyF?`<small>${fw(p)?`<b>${fw(p)} hari kosong</b>`:'penuh'} ${WK?'':'s.d. Jumat'}</small>`:''}</td>${D7.map(d=>cell(p,d)).join('')}</tr>`).join('')}</tbody></table></div>
  <div class="lg"><b style="background:var(--teal)"></b>🚗 Dinas luar<b style="background:var(--ink2)"></b>🏢 Di kantor<b style="background:#f3fbf8;border:1px dashed #9fdcc9"></b>Kosong (belum ada jadwal pelaksanaan) · klik nama penugasan untuk detail</div></div>`}
+const tglR=x=>{const A=tAll(x);return A.length?(A.length>1?fds(A[0])+' – '+fd(akhir(x)):fd(A[0])):x.tm?'mulai '+fd(x.tm):'<span class="mt">tgl pelaksanaan belum diisi</span>'};
 function orangB(){const t=today();
- return `<div class="card"><div class="hd"><h2 style="margin:0">👥 Lagi ngerjain apa</h2><small style="color:var(--m)">penugasan berjalan tiap orang</small></div><div class="pg6">${MA().map(m=>{const n=m.nama,A=S.t.filter(x=>x.st!='selesai'&&onTeam(x,n)),
-  ak=A.filter(x=>x.st!='pending').sort((a,b)=>KWO.indexOf(a.st)-KWO.indexOf(b.st)||srt(a,b)),pd=A.filter(x=>x.st=='pending').length,td=tOn(n,t),nf=nextFree(n);
-  return `<div class="pc"><div class="hd"><span>${who(n)}</span><span class="rl">${PR3[m.peran]||''}</span></div>
+ const it=x=>{const tl=lapTelat(x),now=tAll(x).includes(t);
+  return `<div class="pi" onclick="tForm('${x.id}')" title="${esc(x.rc)}${x.aud?'\n🏢 '+esc(x.aud):''}"><div class="pi1">${now?((x.dl||[]).includes(t)?'🚗 ':'🏢 '):''}<b>${esc(lbT(x))}</b></div><div class="pi2">📅 ${tglR(x)}${x.st=='lapor'&&tl!==null?` · <b style="color:var(--red)">lewat ${tl} hk</b>`:''}</div>${psChip(x)}</div>`};
+ return `<div class="card"><div class="hd"><h2 style="margin:0">👥 Lagi ngerjain apa</h2><small style="color:var(--m)">pelaksanaan berlangsung & laporan yang belum terbit, per orang</small></div><div class="pg6">${MA().map(m=>{const n=m.nama,A=S.t.filter(x=>x.st!='selesai'&&onTeam(x,n)),
+  pr=A.filter(x=>x.st=='proses').sort((a,b)=>String(tAll(a)[0]||a.tm||'9').localeCompare(String(tAll(b)[0]||b.tm||'9'))),
+  lp=A.filter(x=>x.st=='lapor').sort((a,b)=>String(akhir(a)||'9').localeCompare(String(akhir(b)||'9'))),pd=A.filter(x=>x.st=='pending').length,td=tOn(n,t),nf=nextFree(n);
+  const sec=(L,h,st)=>`<div class="ps2 ${st}"><h4>${h}<span>${L.length}</span></h4>${L.slice(0,4).map(it).join('')||'<small class="mt" style="font-size:12px">Tidak ada</small>'}${L.length>4?`<a href="#" class="more" onclick="DF.p='${esc(n)}';DF.st='${st}';go('daftar');return false">+${L.length-4} lainnya</a>`:''}</div>`;
+  return `<div class="pc" style="--pc:${clr(n)}"><div class="pch"><i class="pav">${esc(ini(n))}</i><div><b>${esc(n)}</b><small>${PERAN[m.peran]||''}</small></div></div>
   <div class="pnw">${td.length?'Hari ini: '+td.map(x=>(x.dl||[]).includes(t)?'🚗 dinas luar':'🏢 di kantor').filter((v,i,a)=>a.indexOf(v)==i).join(' + '):libur(t)?'<span style="color:var(--red)">Hari ini libur</span>':'<b style="color:#0a7262">✓ Hari ini kosong</b>'}</div>
-  ${ak.slice(0,4).map(x=>`<div class="pl" onclick="tForm('${x.id}')" title="${esc(x.rc)}"><i class="dot ${x.st}"></i><span>${td.includes(x)?((x.dl||[]).includes(t)?'🚗 ':'🏢 '):''}${esc(lbT(x))}</span><small>${x.st=='lapor'?'laporan':'pelaksanaan'}</small></div>`).join('')}
-  ${ak.length>4?`<a href="#" style="font-size:12px" onclick="DF.p='${esc(n)}';DF.st='';go('daftar');return false">+${ak.length-4} lainnya</a>`:''}${ak.length?'':'<small class="mt" style="font-size:12.5px">Tidak ada penugasan berjalan</small>'}
-  <div class="pf"><span>${nf?`Kosong berikutnya: <b>${nf==t?'hari ini':hr3(nf)+' '+fds(nf)}</b>`:'—'}</span>${pd?`<a href="#" onclick="DF.p='${esc(n)}';DF.st='pending';go('daftar');return false" title="Lihat penugasan pending">${pd} pending</a>`:''}</div></div>`}).join('')}</div></div>`}
+  ${sec(pr,'▶ Penugasan berlangsung','proses')}${sec(lp,'📝 Belum selesai pelaporan','lapor')}
+  <div class="pf"><span>${nf?`Kosong berikutnya: <b>${nf==t?'hari ini':hr3(nf)+' '+fds(nf)}</b>`:'—'}</span>${pd?`<a href="#" onclick="DF.p='${esc(n)}';DF.st='pending';go('daftar');return false" title="Lihat penugasan pending">${pd} pending</a>`:''}</div></div>`}).join('')}</div></div>`+timB()}
+// kumpulan per tim (ketua tim + anggota yang sama) — penugasan yang masih pelaksanaan & belum pelaporan
+function timB(){const G=new Map();
+ S.t.filter(psOn).forEach(x=>{const ang=[...(x.ang||[])].sort(),k=(x.kt||'')+'|'+ang.join(',');if(!G.has(k))G.set(k,{kt:x.kt||'',ang,L:[]});G.get(k).L.push(x)});
+ const R=[...G.values()].sort((a,b)=>b.L.length-a.L.length||a.kt.localeCompare(b.kt));
+ const row=x=>{const tl=lapTelat(x);return `<div class="tr2" onclick="tForm('${x.id}')" title="${esc(x.rc)}"><div class="tr2a"><span class="tag">${esc(x.j)}</span> <b>${esc(x.dj||'')}</b> <span class="ar-t">${esc(String(x.rc).slice(0,120))}</span></div><div class="tr2b">📅 ${tglR(x)}${x.aud?' · 🏢 '+esc(x.aud):''}${tl!==null?` · <b style="color:var(--red)">lap. lewat ${tl} hk</b>`:''}</div>${psEd(x)}</div>`};
+ return `<div class="card"><div class="hd"><h2 style="margin:0">🧩 Per tim — masih pelaksanaan & belum pelaporan</h2><small style="color:var(--m)">dikelompokkan menurut ketua tim + anggota</small></div>
+ ${R.length?`<div class="tg2">${R.map(g=>{const Pr=g.L.filter(x=>x.st=='proses').sort(srt),Lp=g.L.filter(x=>x.st=='lapor').sort(srt);
+  return `<div class="tgc" style="--pc:${g.kt?clr(g.kt):'#98a2a8'}"><div class="tgh"><span>${g.kt?who(g.kt,'Katim'):'<small class="mt">Ketua tim belum ditentukan</small>'}${g.ang.map(n=>who(n)).join('')}</span><span class="tgn">${Pr.length?`<span class="st st-proses">${Pr.length} pelaksanaan</span>`:''}${Lp.length?`<span class="st st-lapor">${Lp.length} belum pelaporan</span>`:''}</span></div>
+  <div class="tgb"><div><h4>▶ Pelaksanaan</h4>${Pr.map(row).join('')||'<small class="mt">—</small>'}</div><div><h4>📝 Belum pelaporan</h4>${Lp.map(row).join('')||'<small class="mt">—</small>'}</div></div></div>`}).join('')}</div>`
+ :'<small class="mt">Tidak ada penugasan yang sedang dilaksanakan atau menunggu laporan.</small>'}</div>`}
 let PGO=false;
 function perhatian(){const act=S.t.filter(x=>x.st!='selesai'),PD=S.t.filter(x=>x.st=='pending').sort((a,b)=>umur(b)-umur(a)),
  TL=act.map(x=>[x,lapTelat(x)]).filter(z=>z[1]!==null).sort((a,b)=>b[1]-a[1]),LT=act.filter(lewatT);
- const row=(x,m,hi)=>`<div class="ar" onclick="tForm('${x.id}')"><div class="ar1"><span class="tag">${esc(x.j)}</span> <b>${esc(x.dj||'')}</b> <span class="ar-t">${esc(String(x.rc).slice(0,110))}</span></div><div class="ar2"><span class="chip tl ${hi?'hi':''}">${m}</span>${avs(x)}</div></div>`;
+ const row=(x,m,hi)=>`<div class="ar" onclick="tForm('${x.id}')"><div class="ar1"><span class="tag">${esc(x.j)}</span> <b>${esc(x.dj||'')}</b> <span class="ar-t">${esc(String(x.rc).slice(0,110))}</span></div><div class="ar2"><span class="chip tl ${hi?'hi':''}">${m}</span>${avs(x)}${psChip(x)}</div></div>`;
  const n=TL.length+LT.length;
  return `<div class="card" ${n?'style="border-color:#f0c9c5"':''}><h2>⚠️ Perlu perhatian</h2>
  ${TL.length?`<div class="atg"><h4>📝 Laporan belum terbit (${TL.length})</h4>${TL.map(([x,d])=>row(x,`${d} hari kerja sejak pelaksanaan terakhir`,d>10)).join('')}</div>`:''}
@@ -566,11 +642,20 @@ async function ntDel(id){if(!confirm('Hapus catatan ini untuk seluruh tim?'))ret
 function bebanRows(){const act=S.t.filter(x=>x.st!='selesai'),m0=today().slice(0,7),ppl=KN();
  return ppl.map(n=>{const A=act.filter(x=>onTeam(x,n)),dl=new Set(S.t.filter(x=>onTeam(x,n)).flatMap(x=>(x.dl||[]).filter(d=>d.startsWith(m0))));
   return{n,dal:A.filter(x=>x.dal==n).length,kt:A.filter(x=>x.kt==n).length,ang:A.filter(x=>(x.ang||[]).includes(n)).length,tot:A.length,pd:A.filter(x=>x.st=='pending').length,dl:dl.size}})}
-function beban(){const R=bebanRows(),mx=Math.max(1,...R.map(r=>r.tot));
- return `<div class="card"><div class="hd"><h2 style="margin:0">Beban kerja tim</h2><small style="color:var(--m)">penugasan aktif (belum selesai)</small></div>
- <table class="wl" style="width:100%;border-collapse:collapse;margin-top:8px"><thead><tr><th>Nama</th><th title="Sebagai pengendali teknis">Dalnis</th><th title="Sebagai ketua tim">Katim</th><th title="Sebagai anggota">Anggota</th><th>Total aktif</th><th title="Hari dinas luar bulan ini">DL bln ini</th></tr></thead><tbody>
- ${R.map(r=>`<tr style="cursor:pointer" onclick="DF.p='${esc(r.n)}';go('daftar')" title="Lihat penugasan ${esc(r.n)}"><td>${who(r.n)}${mBy(r.n)?`<br><span class="rl">${PERAN[mBy(r.n).peran]}</span>`:''}</td><td>${r.dal||'–'}</td><td>${r.kt||'–'}</td><td>${r.ang||'–'}</td><td><span class="bar" style="width:${r.tot/mx*90}px;background:${clr(r.n)}"></span> <b>${r.tot}</b>${r.pd?` <small style="color:#a14a00">(${r.pd} pending)</small>`:''}</td><td>${r.dl||'–'}</td></tr>`).join('')}</tbody></table>
- <small style="color:var(--m);display:block;margin-top:6px">Klik nama untuk melihat penugasannya.</small></div>`}
+function beban(){const R=bebanRows(),act=S.t.filter(x=>x.st!='selesai'),ST=['pending','proses','lapor'];
+ R.forEach(r=>{const A=act.filter(x=>onTeam(x,r.n));ST.forEach(s=>r[s]=A.filter(x=>x.st==s).length)});
+ const mx=Math.max(1,...R.map(r=>r.tot)),mxd=Math.max(1,...R.map(r=>r.dl)),bl=BLN[new Date().getMonth()],step=mx<=6?1:mx<=12?2:5,
+ tk=[...Array(Math.floor(mx/step)+1).keys()].map(i=>i*step),RL=[['dal','Dalnis','#0f1b2d'],['kt','Katim','#3557d4'],['ang','Anggota','#93a8e8']],mxr=Math.max(1,...R.map(r=>r.dal+r.kt+r.ang));
+ return `<div class="card"><div class="hd"><h2 style="margin:0">📊 Beban kerja tim</h2><small style="color:var(--m)">penugasan aktif (belum selesai) · klik batang untuk melihat penugasannya</small></div>
+ <div class="bcg"><div><h3>Penugasan aktif per orang, menurut status</h3><div class="bc">${R.map(r=>`<div class="bc-r" onclick="DF.p='${esc(r.n)}';DF.st='';go('daftar')" title="${esc(r.n)}\n${ST.map(s=>KWS[s]+': '+r[s]).join('\n')}"><div class="bc-n">${who(r.n)}</div><div class="bc-t"><div class="bc-g">${tk.map(t=>`<u style="left:${t/mx*100}%"></u>`).join('')}<div class="bc-b" style="width:${r.tot/mx*100}%">${ST.map(s=>r[s]?`<i class="${s}" style="flex:${r[s]}">${r[s]}</i>`:'').join('')}</div></div><b>${r.tot}</b></div></div>`).join('')}
+ <div class="bc-r ax"><div></div><div class="bc-t"><div class="bc-g">${tk.map(t=>`<span style="left:${t/mx*100}%">${t}</span>`).join('')}</div><b></b></div></div></div>
+ <div class="lg">${ST.map(s=>`<b class="lgc ${s}"></b>${KWS[s]}`).join('')}</div>
+ <h3 style="margin-top:18px">Peran di penugasan aktif</h3><div class="bc">${R.map(r=>`<div class="bc-r" onclick="DF.p='${esc(r.n)}';DF.st='';go('daftar')" title="${esc(r.n)}\nDalnis: ${r.dal} · Katim: ${r.kt} · Anggota: ${r.ang}"><div class="bc-n">${who(r.n)}</div><div class="bc-t"><div class="bc-g"><div class="bc-b" style="width:${(r.dal+r.kt+r.ang)/mxr*100}%">${RL.map(([k,l,c])=>r[k]?`<i style="flex:${r[k]};background:${c}" title="${l}: ${r[k]}">${r[k]}</i>`:'').join('')}</div></div><b>${r.dal+r.kt+r.ang}</b></div></div>`).join('')}</div>
+ <div class="lg">${RL.map(([k,l,c])=>`<b style="background:${c}"></b>${l}`).join('')}</div></div>
+ <div><h3>Hari dinas luar — ${bl}</h3><div class="vc">${R.map(r=>`<div title="${esc(r.n)}: ${r.dl} hari dinas luar di ${bl}"><b>${r.dl}</b><i class="vb" style="height:${r.dl/mxd*82}%;background:${clr(r.n)}"></i></div>`).join('')}</div>
+ <div class="vl">${R.map(r=>`<div>${esc(r.n.split(/\s+/).slice(0,r.n.split(/\s+/)[0].length<3?2:1).join(' '))}</div>`).join('')}</div>
+ <h3 style="margin-top:18px">Penugasan pending per orang</h3><div class="vc sm">${R.map(r=>`<div title="${esc(r.n)}: ${r.pd} pending" onclick="DF.p='${esc(r.n)}';DF.st='pending';go('daftar')" style="cursor:pointer"><b>${r.pd}</b><i class="vb" style="height:${r.pd/Math.max(1,...R.map(z=>z.pd))*80}%;background:#f97316"></i></div>`).join('')}</div>
+ <div class="vl">${R.map(r=>`<div>${esc(r.n.split(/\s+/).slice(0,r.n.split(/\s+/)[0].length<3?2:1).join(' '))}</div>`).join('')}</div></div></div></div>`}
 function aktivitas(){const L=S.t.flatMap(x=>(x.pr||[]).map(p=>[x,p])).sort((a,b)=>String(b[1].at||b[1].tg).localeCompare(String(a[1].at||a[1].tg))||b[1].id-a[1].id).slice(0,8);
  return `<div class="card"><h2>🕑 Aktivitas terbaru</h2>${L.map(([x,p])=>`<div class="act"><div>${p.by?`<i class="who" style="padding:0;background:none"><i style="background:${clr(p.by)}">${esc(ini(p.by))}</i></i>`:'•'}</div><div style="flex:1;cursor:pointer" onclick="tForm('${x.id}')"><b>${esc(p.by||'—')}</b> ${p.a?'<i>'+esc(p.x)+'</i>':'· '+esc(p.x)}<br><small>${fd(p.tg)} · ${esc(nmT(x))}${x.aud?' · '+esc(x.aud):''}</small></div></div>`).join('')||'<small class="mt">Belum ada aktivitas.</small>'}</div>`}
 
@@ -582,16 +667,19 @@ function card(x){const u=umur(x),P=prL(x),tl=lapTelat(x),nx=KWN[x.st];
  <div style="white-space:pre-line;margin:6px 0">${esc(x.rc)}</div><div>${timH(x)}</div>
  <div class="meta">📨 Surat masuk ${fd(x.tsm)}${x.ns?' · No. '+esc(x.ns):''}${tAll(x).length?` · 📅 ${fds(tAll(x)[0])}${tAll(x).length>1?' – '+fds(akhir(x)):''} (${(x.dl||[]).length?(x.dl||[]).length+' hr DL':''}${(x.dl||[]).length&&(x.dk||[]).length?', ':''}${(x.dk||[]).length?(x.dk||[]).length+' hr kantor':''})`:''}${x.tgt?' · 🎯 target '+fd(x.tgt):''}</div>
  ${x.st!='selesai'?`<span class="chip tl ${u>20?'hi':''}" title="Hari kerja sejak surat masuk">⏱ ${u} hari kerja sejak masuk</span>`:''}${tl!==null?`<span class="chip tl ${tl>10?'hi':''}">📝 laporan belum terbit · ${tl} hk</span>`:''}${lewatT(x)?'<span class="chip tl hi">⏰ lewat target</span>':''}
+ ${psOn(x)?`<div class="psw"><small style="color:var(--m)">Progres ${KWS[x.st].toLowerCase()}</small>${psEd(x)}</div>`:''}
  ${x.ket?`<div class="drb" style="margin-top:8px;background:#fff8e6;color:#7a4a00">${esc(x.ket)}</div>`:''}
  <h3 style="margin-top:10px">Progres (${P.length})</h3>${P.slice(0,3).map(p=>`<div class="lgn"><small>${fd(p.tg)} · ${esc(p.by||'')}</small> · ${p.a?'<i>'+esc(p.x)+'</i>':esc(p.x)}</div>`).join('')||'<small class="mt">Belum ada catatan progres.</small>'}${P.length>3?`<small style="color:var(--m)"> +${P.length-3} lainnya</small>`:''}
  ${canProg(x)?`<div class="row" style="margin-top:8px"><input id="kp_${x.id}" placeholder="Tambah progres, lalu Enter" onkeydown="if(event.key=='Enter')addPr('${x.id}')"><button class="s" onclick="addPr('${x.id}')">Catat</button></div>`:''}
  <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">${nx&&canEdit(x)?`<button class="s" onclick="setSt('${x.id}','${nx[0]}')">${nx[1]}</button>`:''}<button class="s" onclick="tForm('${x.id}')">${canEdit(x)?'Edit / riwayat':'Detail / riwayat'}</button>${x.fo?`<a class="s" style="text-decoration:none" href="${esc(x.fo)}" target="_blank" rel="noopener">📁 Folder</a>`:''}</div></div>`}
 async function setSt(id,st){const x0=fT(id);if(!x0||x0.st==st)return;let ln='';
  if(st=='selesai'&&!String(x0.ln||'').trim()){ln=prompt('Nomor laporan (boleh dikosongkan, bisa diisi nanti):','');if(ln===null)return rr()}
- await mut(id,x=>{x.st=st;if(st=='proses'&&!x.tm)x.tm=today();if(st=='selesai'){if(!x.ts)x.ts=today();if(ln&&!x.ln){x.ln=ln.trim();if(!x.tlp)x.tlp=today()}}if(st!='selesai')x.ts='';
+ await mut(id,x=>{x.st=st;x.ps='';x.psn='';if(st=='proses'&&!x.tm)x.tm=today();if(st=='selesai'){if(!x.ts)x.ts=today();if(ln&&!x.ln){x.ln=ln.trim();if(!x.tlp)x.tlp=today()}}if(st!='selesai')x.ts='';
   (x.pr=x.pr||[]).push({id:nid(),tg:today(),at:new Date().toISOString(),x:'Status → '+KWS[st],by:ME.nama,a:1})});tt2('Status: '+KWS[st])}
 async function addPr(id,el='kp_'+id){const e=$(el),v=e?.value.trim();if(!v)return e?.focus();const tg=$(el+'d')?.value||today();
  await mut(id,x=>(x.pr=x.pr||[]).push({id:nid(),tg,at:new Date().toISOString(),x:v,by:ME.nama}));tt2('Progres dicatat');if(FID==id)tForm(id);else setTimeout(()=>$(el)?.focus(),0)}
+async function setPs(id,k,n){const x0=fT(id);if(!x0)return;if(k!==undefined&&(x0.ps||'')==k)return;if(n!==undefined){n=n.trim();if((x0.psn||'')==n)return}
+ await mut(id,x=>{if(k!==undefined)x.ps=k;if(n!==undefined)x.psn=n;(x.pr=x.pr||[]).push({id:nid(),tg:today(),at:new Date().toISOString(),x:k!==undefined?'Progres '+KWS[x.st].toLowerCase()+' → '+(PSL[k]||'(dikosongkan)'):'Catatan progres: '+(n||'(dihapus)'),by:ME.nama,a:1})});tt2('Progres diperbarui')}
 async function delPr(id,pid){if(!confirm('Hapus catatan progres ini?'))return;await mut(id,x=>x.pr=(x.pr||[]).filter(p=>p.id!=pid));if(FID==id)tForm(id)}
 
 // =====================================================================
@@ -624,26 +712,32 @@ function dfBar(rid,noSt){const yrs=[...new Set(S.t.map(x=>String(x.tsm||'').slic
 
 // ---------- PAPAN (kanban, seret kartu untuk ubah status) ----------
 const PJC=new Set(),PDO=new Set();
-function papan(){return dfBar('kanb',1)+`<div style="display:flex;justify-content:flex-end;gap:6px;margin:-4px 0 8px"><button class="s" onclick="jsOf(S.t).forEach(j=>PJC.add(j));PDO.clear();$('kanb').innerHTML=kanB()">⊟ Ciutkan</button><button class="s" onclick="PJC.clear();dfL(1).forEach(x=>PDO.add(x.j+'||'+(x.dj||'')));$('kanb').innerHTML=kanB()">⊞ Buka semua</button></div><div id="kanb">${kanB()}</div><small style="color:var(--m)">Klik baris jenis / detail untuk membuka papannya. Seret kartu ke kolom lain untuk mengubah status (hanya Korwas, ketua tim penugasan itu, atau pembuatnya). Klik kartu untuk detail.</small>`}
+function papan(){return dfBar('kanb',1)+`<div style="display:flex;justify-content:flex-end;gap:6px;margin:-4px 0 8px"><button class="s" onclick="jsOf(S.t).forEach(j=>PJC.add(j));PDO.clear();PSX.clear();$('kanb').innerHTML=kanB()">⊟ Ciutkan</button><button class="s" onclick="PJC.clear();dfL(1).forEach(x=>PDO.add(x.j+'||'+(x.dj||'')));$('kanb').innerHTML=kanB()">⊞ Buka semua</button></div><div id="kanb">${kanB()}</div><small style="color:var(--m)">Klik baris jenis / detail untuk membukanya, lalu klik kotak status (Pending / Pelaksanaan / Penyusunan laporan / Selesai) untuk menampilkan penugasannya. Seret kartu ke kotak status lain untuk mengubah status (hanya Korwas, ketua tim penugasan itu, atau pembuatnya).</small>`}
 // progres kluster: bobot pending 0, pelaksanaan ⅓, penyusunan laporan ⅔, selesai 1
 const PW={pending:0,proses:1/3,lapor:2/3,selesai:1};
 function pgH(A){const n=A.length,c=s=>A.filter(x=>x.st==s).length,pc=n?Math.round(A.reduce((t,x)=>t+PW[x.st],0)/n*100):0;
  return {bar:`<div><div class="spb" title="${KWO.map(s=>KWS[s]+': '+c(s)).join(' · ')}">${KWO.map(s=>c(s)?`<i class="${s}" style="width:${c(s)/n*100}%"></i>`:'').join('')}</div><span class="pgt"><b style="color:var(--ink)">${pc}%</b> progres · ${c('selesai')} dari ${n} selesai</span></div>`,
   num:`<span class="pnum">${KWO.map(s=>c(s)?`<span class="st st-${s}">${c(s)} ${KWS[s].toLowerCase()}</span>`:'').join('')}</span>`}}
 function kCard(x){const tl=lapTelat(x),w=x.st=='selesai'?'✓ '+fds(x.ts):tl!==null?`<b style="color:var(--red)">lap. ${tl} hk</b>`:lewatT(x)?'<b style="color:var(--red)">lewat target</b>':umur(x)+' hk';
- return `<div class="kcard ${x.st}" ${canEdit(x)?`draggable="true" ondragstart="event.dataTransfer.setData('text/plain','${x.id}')"`:''} onclick="tForm('${x.id}')" title="${esc(x.rc)}${x.aud?'\n🏢 '+esc(x.aud):''}\nTim: ${esc(team(x).join(', '))}"><div class="ttl">${esc(String(x.rc).slice(0,140))}</div><div class="km">${avs(x)}<span>${esc(x.aud||'')}</span>${w}</div></div>`}
-const KMO=new Set();
-function kanMini(B,kk=''){return `<div class="kan">${KWO.map(s=>{let A=B.filter(x=>x.st==s).sort(srt);if(s=='selesai')A=A.sort((a,b)=>String(b.ts).localeCompare(String(a.ts)));const lim=s=='selesai'?6:12,more=A.length>lim&&!KMO.has(kk+s)?A.length-lim:0;if(more)A=A.slice(0,lim);
- return `<div class="kcol" data-st="${s}" ondragover="event.preventDefault();this.classList.add('dz')" ondragleave="this.classList.remove('dz')" ondrop="kDrop(event,'${s}')"><h3><span>${KWS[s]}</span><span class="st st-${s}">${B.filter(x=>x.st==s).length}</span></h3>
- ${A.map(kCard).join('')}${more?`<button class="s kmore" data-k="${esc(kk+s)}" onclick="KMO.add(this.dataset.k);$('kanb').innerHTML=kanB()">+${more} lainnya</button>`:''}</div>`}).join('')}</div>`}
-function kanB(){const L=dfL(1),qa=!!nrm(DF.q).trim();
- if(!L.length)return '<div class="card"><small class="mt">Tidak ada penugasan yang cocok dengan filter.</small></div>';
- const P0=pgH(L);
- return `<div class="card" style="display:grid;grid-template-columns:260px minmax(220px,1fr) 400px;gap:14px;align-items:center;padding:12px 14px"><b>Seluruh penugasan (sesuai filter) · ${L.length}</b>${P0.bar}${P0.num}</div>`+
- jsOf(L).map(j=>{const A=L.filter(x=>x.j==j),ds=dsOf(j,A),P=pgH(A);
+ return `<div class="kcard ${x.st}" ${canEdit(x)?`draggable="true" ondragstart="event.dataTransfer.setData('text/plain','${x.id}')"`:''} onclick="tForm('${x.id}')" title="${esc(x.rc)}${x.aud?'\n🏢 '+esc(x.aud):''}\nTim: ${esc(team(x).join(', '))}"><div class="ttl">${esc(String(x.rc).slice(0,140))}</div><div class="km">${avs(x)}<span>${esc(x.aud||'')}</span>${w}</div>${x.st!='pending'&&x.st!='selesai'&&tAll(x).length?`<div class="km2">📅 ${tglR(x)}</div>`:''}${psEd(x)}</div>`}
+const KMO=new Set(),PSX=new Map();
+// kotak status per rincian: klik untuk menampilkan kartu status itu saja (default: tertutup, kecuali filter status aktif)
+function kanMini(B,kk){const op=PSX.has(kk)?PSX.get(kk):(DF.st||'');
+ const tiles=`<div class="stl">${KWO.map(s=>{const n=B.filter(x=>x.st==s).length;return `<button type="button" class="stc ${s} ${op==s?'on':''} ${n?'':'z'}" data-k="${esc(kk)}" data-s="${s}" onclick="pxT(this)" ondragover="event.preventDefault();this.classList.add('dz')" ondragleave="this.classList.remove('dz')" ondrop="kDrop(event,'${s}')" title="${KWD[s]}"><small>${KWS[s]}</small><b>${n}</b><span class="stx">${op==s?'▴ tutup':n?'▾ lihat':''}</span></button>`}).join('')}</div>`;
+ if(!op)return tiles;
+ let A=B.filter(x=>x.st==op).sort(srt);if(op=='selesai')A=A.sort((a,b)=>String(b.ts).localeCompare(String(a.ts)));
+ const kk2=kk+'|'+op,lim=op=='selesai'?9:24,more=A.length>lim&&!KMO.has(kk2)?A.length-lim:0;if(more)A=A.slice(0,lim);
+ return tiles+`<div class="kgr ${op}">${A.map(kCard).join('')||`<small class="mt" style="padding:4px 2px">Tidak ada penugasan berstatus ${KWS[op].toLowerCase()}.</small>`}${more?`<button class="s kmore" data-k="${esc(kk2)}" onclick="KMO.add(this.dataset.k);$('kanb').innerHTML=kanB()">+${more} lainnya</button>`:''}</div>`}
+function pxT(e){const k=e.dataset.k,s=e.dataset.s,op=PSX.has(k)?PSX.get(k):(DF.st||'');PSX.set(k,op==s?'':s);$('kanb').innerHTML=kanB()}
+function kanB(){const L0=dfL(1),qa=!!nrm(DF.q).trim(),fs=DF.st,L=fs?L0.filter(x=>x.st==fs):L0;
+ const chips=`<div class="sfl"><span class="sfh">Status penugasan:</span>${['',...KWO].map(s=>`<button type="button" class="sfb ${s} ${fs==s?'on':''}" onclick="DF.st='${s}';PSX.clear();$('kanb').innerHTML=kanB()" title="${s?KWD[s]:'Tampilkan semua status'}">${s?KWS[s]:'Semua'}<span>${s?L0.filter(x=>x.st==s).length:L0.length}</span></button>`).join('')}</div>`;
+ if(!L.length)return chips+'<div class="card"><small class="mt">Tidak ada penugasan yang cocok dengan filter.</small></div>';
+ const P0=pgH(L0);
+ return chips+`<div class="card" style="display:grid;grid-template-columns:260px minmax(220px,1fr) 400px;gap:14px;align-items:center;padding:12px 14px"><b>Seluruh penugasan (sesuai filter) · ${L0.length}</b>${P0.bar}${P0.num}</div>`+
+ jsOf(L).map(j=>{const A=L0.filter(x=>x.j==j),ds=dsOf(j,L.filter(x=>x.j==j)),P=pgH(A);
  return `<details class="pj" ${PJC.has(j)?'':'open'} data-j="${esc(j)}" ontoggle="this.open?PJC.delete(this.dataset.j):PJC.add(this.dataset.j)"><summary><span><span class="tag">${esc(j)}</span> ${A.length} penugasan</span>${P.bar}${P.num}</summary><div class="in">
- ${ds.map(d=>{const B=A.filter(x=>(x.dj||'')==d),k=j+'||'+d,Q=pgH(B);return `<details class="pd" ${PDO.has(k)||qa?'open':''} data-k="${esc(k)}" ontoggle="this.open?PDO.add(this.dataset.k):PDO.delete(this.dataset.k)"><summary><span>↳ ${esc(d||'Tanpa detail jenis')} <small style="color:var(--m);font-weight:400">(${B.length})</small></span>${Q.bar}${Q.num}</summary>${kanMini(B,k+'|')}</details>`}).join('')}</div></details>`}).join('')}
-async function kDrop(e,st){e.preventDefault();document.querySelectorAll('.kcol').forEach(c=>c.classList.remove('dz'));const id=e.dataTransfer.getData('text/plain'),x=fT(id);
+ ${ds.map(d=>{const B=A.filter(x=>(x.dj||'')==d),k=j+'||'+d,Q=pgH(B);return `<details class="pd" ${PDO.has(k)||qa||fs?'open':''} data-k="${esc(k)}" ontoggle="this.open?PDO.add(this.dataset.k):PDO.delete(this.dataset.k)"><summary><span>↳ ${esc(d||'Tanpa detail jenis')} <small style="color:var(--m);font-weight:400">(${B.length})</small></span>${Q.bar}${Q.num}</summary>${kanMini(B,k)}</details>`}).join('')}</div></details>`}).join('')}
+async function kDrop(e,st){e.preventDefault();document.querySelectorAll('.kcol,.stc').forEach(c=>c.classList.remove('dz'));const id=e.dataTransfer.getData('text/plain'),x=fT(id);
  if(!x||x.st==st)return;if(!canEdit(x))return alert('Status penugasan ini hanya bisa diubah Korwas, ketua timnya, atau pembuatnya.');await setSt(id,st)}
 
 // ---------- DAFTAR (dikelompokkan per jenis & detail jenis) ----------
@@ -660,8 +754,8 @@ function dafL(){const L=dfL(),q=nrm(DF.q).split(/\s+/).filter(Boolean),qa=!!q.le
  return `<details class="cl card" ${TCL.has(j)?'':'open'} data-j="${esc(j)}" ontoggle="this.open?TCL.delete(this.dataset.j):TCL.add(this.dataset.j)"><summary><span class="tag">${esc(j)}</span> ${A.length} penugasan<span class="cnt">${cntSt(A)}</span></summary><div class="in">
  ${ds.map(d=>{const B=A.filter(x=>(x.dj||'')==d).sort((a,b)=>KWO.indexOf(a.st)-KWO.indexOf(b.st)||srt(a,b)),k=j+'||'+d,op=DJO.has(k)||qa||ds.length==1&&B.length<=5;
  return `<details class="dj" ${op?'open':''} data-k="${esc(k)}" ontoggle="this.open?DJO.add(this.dataset.k):DJO.delete(this.dataset.k)"><summary>↳ ${esc(d||'Tanpa detail jenis')} <small style="color:var(--m);font-weight:400">(${B.length})</small><span class="cnt">${cntSt(B)}</span></summary>
- <table class="tb kt2"><thead><tr><th style="width:30px">No</th><th style="width:150px">Nomor ND &amp; SPT</th><th>Rincian</th><th style="width:220px">Tim</th><th style="width:160px">Status</th><th style="width:140px">Tanggal pelaksanaan</th><th style="width:150px">Waktu</th><th style="width:80px"></th></tr></thead><tbody>
- ${B.map((x,i)=>{const p=prL(x)[0];return `<tr><td>${i+1}</td><td><small style="color:var(--m)">ND</small> ${x.nd?hl(x.nd,q):'<span class="mt">—</span>'}<br><small style="color:var(--m)">SPT</small> ${x.spt?hl(x.spt,q):'<span class="mt">—</span>'}</td><td style="white-space:pre-line"><a href="#" style="text-decoration:none;color:inherit" onclick="tForm('${x.id}');return false">${hl(x.rc,q)}</a>${x.aud?`<br><small>🏢 ${esc(x.aud)}</small>`:''}${p?`<br><small style="color:var(--m)">📝 ${fd(p.tg)} · ${esc(p.by||'')}: ${esc(String(p.x).slice(0,110))}</small>`:''}</td><td>${timH(x)}</td><td>${selSt(x)}</td><td>${tglP(x)}</td><td>${waktu(x)}</td><td class="ac"><button class="x" style="color:var(--ink)" onclick="tForm('${x.id}')">${canEdit(x)?'Edit':'Buka'}</button>${canDel(x)?`<button class="x" onclick="tDel('${x.id}')">Hapus</button>`:''}</td></tr>`}).join('')}</tbody></table></details>`}).join('')}</div></details>`}).join('')}
+ <table class="tb kt2"><thead><tr><th style="width:30px">No</th><th style="width:150px">Nomor ND &amp; SPT</th><th>Rincian</th><th style="width:220px">Tim</th><th style="width:230px">Status &amp; progres</th><th style="width:140px">Tanggal pelaksanaan</th><th style="width:150px">Waktu</th><th style="width:80px"></th></tr></thead><tbody>
+ ${B.map((x,i)=>{const p=prL(x)[0];return `<tr><td>${i+1}</td><td><small style="color:var(--m)">ND</small> ${x.nd?hl(x.nd,q):'<span class="mt">—</span>'}<br><small style="color:var(--m)">SPT</small> ${x.spt?hl(x.spt,q):'<span class="mt">—</span>'}</td><td style="white-space:pre-line"><a href="#" style="text-decoration:none;color:inherit" onclick="tForm('${x.id}');return false">${hl(x.rc,q)}</a>${x.aud?`<br><small>🏢 ${esc(x.aud)}</small>`:''}${p?`<br><small style="color:var(--m)">📝 ${fd(p.tg)} · ${esc(p.by||'')}: ${esc(String(p.x).slice(0,110))}</small>`:''}</td><td>${timH(x)}</td><td>${selSt(x)}${psEd(x)}</td><td>${tglP(x)}</td><td>${waktu(x)}</td><td class="ac"><button class="x" style="color:var(--ink)" onclick="tForm('${x.id}')">${canEdit(x)?'Edit':'Buka'}</button>${canDel(x)?`<button class="x" onclick="tDel('${x.id}')">Hapus</button>`:''}</td></tr>`}).join('')}</tbody></table></details>`}).join('')}</div></details>`}).join('')}
 
 // =====================================================================
 // JADWAL TIM (matriks orang × tanggal) & BEBAN KERJA
@@ -710,8 +804,9 @@ function tForm(id=null,pre={}){const x=id?fT(id):{st:'pending',tsm:today(),dal:d
  <div class="sec"><h3>Tim</h3><div class="row"><div><label>Pengendali teknis (Dalnis)</label><input id="f_dal" list="pgl" autocomplete="off" value="${v('dal')}"></div><div><label>Ketua tim</label><input id="f_kt" list="pgl" autocomplete="off" value="${v('kt')}" placeholder="${esc(kts.join(' / '))}"></div></div>
  <label>Anggota — ketik lalu pilih nama (boleh pegawai korwas lain)</label><div id="f_angc"></div>
  <div class="row"><input id="f_angi" list="pgl" placeholder="Ketik nama anggota…" autocomplete="off" onkeydown="if(event.key=='Enter'){event.preventDefault();angA()}" oninput="if(NAMES().includes(this.value))angA()"><button type="button" class="s" onclick="angA()">Tambah</button></div></div>
- <div class="sec"><h3>Status</h3><div class="row"><div><label>Status</label><select id="f_st">${KWO.map(s=>`<option value="${s}" ${x.st==s?'selected':''} title="${KWD[s]}">${KWS[s]}</option>`).join('')}</select></div><div><label>Target selesai</label><input type="date" id="f_tgt" value="${v('tgt')}"></div></div>
+ <div class="sec"><h3>Status</h3><div class="row"><div><label>Status</label><select id="f_st" onchange="$('f_psw').style.display=/proses|lapor/.test(this.value)?'':'none'">${KWO.map(s=>`<option value="${s}" ${x.st==s?'selected':''} title="${KWD[s]}">${KWS[s]}</option>`).join('')}</select></div><div><label>Target selesai</label><input type="date" id="f_tgt" value="${v('tgt')}"></div></div>
  <div class="row"><div><label>Mulai dilaksanakan</label><input type="date" id="f_tm" value="${v('tm')}"></div><div><label>Tanggal selesai</label><input type="date" id="f_ts" value="${v('ts')}"></div></div>
+ <div class="row" id="f_psw" style="${psOn(x)?'':'display:none'}"><div><label>Progres tahap</label><select id="f_ps"><option value="">— belum diisi —</option>${PSO.map(([k,l])=>`<option value="${k}" ${x.ps==k?'selected':''}>${l}</option>`).join('')}</select></div><div style="flex:1.6"><label>Catatan progres</label><input id="f_psn" value="${v('psn')}" placeholder="mis. data dari satker dijanjikan Jumat"></div></div>
  <label>Keterangan / kendala</label><textarea id="f_ket" rows="2" placeholder="mis. menunggu jadwal dari Inspektur, menunggu data dari satker">${v('ket')}</textarea></div>
  </div><div>
  <div id="f_dpw">${LK('f_')}</div>
@@ -720,7 +815,7 @@ function tForm(id=null,pre={}){const x=id?fT(id):{st:'pending',tsm:today(),dal:d
  <label>Link folder bersama (Drive / OneDrive)</label><input id="f_fo" type="url" placeholder="https://" value="${v('fo')}">${x.fo?` <a href="${esc(x.fo)}" target="_blank" rel="noopener">📁 Buka folder</a>`:''}</div>
  </div></div></fieldset>
  ${ro?'':`<button class="p" onclick="tSave()">${id?'Simpan perubahan':'Simpan'}</button> <button class="s" onclick="clEd()">Batal</button> <small style="color:var(--m)">Ctrl+S untuk simpan</small>`}
- ${id?`<h3>Riwayat progres (${P.length})</h3>${canProg(x)?`<div class="row"><div style="flex:0 0 160px"><input type="date" id="kpmd" value="${today()}"></div><input id="kpm" placeholder="Tulis progres, lalu Enter" onkeydown="if(event.key=='Enter')addPr('${x.id}','kpm')"><button class="s" onclick="addPr('${x.id}','kpm')">Catat</button></div>`:''}
+ ${id?`${ro&&psOn(x)&&canProg(x)?`<h3>Progres ${KWS[x.st].toLowerCase()}</h3>${psEd(x)}`:''}<h3>Riwayat progres (${P.length})</h3>${canProg(x)?`<div class="row"><div style="flex:0 0 160px"><input type="date" id="kpmd" value="${today()}"></div><input id="kpm" placeholder="Tulis progres, lalu Enter" onkeydown="if(event.key=='Enter')addPr('${x.id}','kpm')"><button class="s" onclick="addPr('${x.id}','kpm')">Catat</button></div>`:''}
  ${P.map(p=>`<div class="lgn"><div class="hd"><small>${hari(p.tg)}, ${fd(p.tg)} · <b>${esc(p.by||'—')}</b></small>${(p.by==ME.nama||isMgr())&&canProg(x)?`<button class="x" onclick="delPr('${x.id}',${p.id})">✕</button>`:''}</div>${p.a?'<i>'+esc(p.x)+'</i>':esc(p.x)}</div>`).join('')||'<small class="mt">Belum ada catatan progres.</small>'}
  ${canDel(x)?`<div style="margin-top:14px;text-align:right"><button class="x" onclick="tDel('${x.id}')">Hapus penugasan ini</button></div>`:''}`:''}</div></div>`;
  document.body.style.overflow='hidden';angR();
@@ -728,12 +823,13 @@ function tForm(id=null,pre={}){const x=id?fT(id):{st:'pending',tsm:today(),dal:d
  if(ro)$('f_dpw').querySelectorAll('input,button').forEach(e=>e.disabled=true);
  setTimeout(()=>(id?null:$('f_rc'))?.focus(),0)}
 async function tSave(){if($('f_angi')?.value.trim())angA();const v=k=>($('f_'+k)?.value||'').trim();
- const d={j:v('j'),dj:v('dj'),tsm:v('tsm'),ns:v('ns'),rc:v('rc'),aud:v('aud'),lhp:v('lhp'),dal:v('dal'),kt:v('kt'),ang:[...FANG],st:v('st'),tm:v('tm'),tgt:v('tgt'),ts:v('ts'),ket:v('ket'),nd:v('nd'),spt:v('spt'),ln:v('ln'),tlp:v('tlp'),fo:v('fo'),
+ const d={j:v('j'),dj:v('dj'),tsm:v('tsm'),ns:v('ns'),rc:v('rc'),aud:v('aud'),lhp:v('lhp'),dal:v('dal'),kt:v('kt'),ang:[...FANG],st:v('st'),tm:v('tm'),tgt:v('tgt'),ts:v('ts'),ket:v('ket'),nd:v('nd'),spt:v('spt'),ln:v('ln'),tlp:v('tlp'),fo:v('fo'),ps:v('ps'),psn:v('psn'),
   dk:$('f_ck_k').checked?[...DP.f_k.d].sort():[],dl:$('f_ck_l').checked?[...DP.f_l.d].sort():[]};
  if(!d.j||!d.tsm||!d.rc)return alert('Isi jenis, tanggal surat masuk, dan rincian penugasan.');
  if(d.st=='proses'&&!d.tm)d.tm=today();if(d.st=='selesai'&&!d.ts)d.ts=today();if(d.st!='selesai')d.ts='';if(d.ln&&!d.tlp&&d.st=='selesai')d.tlp=d.ts;
+ {const o=FID?fT(FID):null;if(o&&o.st!=d.st&&d.ps==(o.ps||'')&&d.psn==(o.psn||'')){d.ps='';d.psn=''}if(!psOn(d)){d.ps='';d.psn=''}}
  const now=new Date().toISOString();let x;
- if(FID){x={...fT(FID)};if(x.st!=d.st)x.pr=[...(x.pr||[]),{id:nid(),tg:today(),at:now,x:'Status → '+KWS[d.st],by:ME.nama,a:1}];Object.assign(x,d)}
+ if(FID){x={...fT(FID)};if(x.st!=d.st)x.pr=[...(x.pr||[]),{id:nid(),tg:today(),at:now,x:'Status → '+KWS[d.st],by:ME.nama,a:1}];if(psOn(d)&&(d.ps||d.psn)&&(d.ps!=(x.ps||'')||d.psn!=(x.psn||'')))x.pr=[...(x.pr||[]),{id:nid(),tg:today(),at:now,x:'Progres '+KWS[d.st].toLowerCase()+' → '+[PSL[d.ps],d.psn].filter(Boolean).join(' — '),by:ME.nama,a:1}];Object.assign(x,d)}
  else x={id:uuid(),...d,cb:ME.email,cbn:ME.nama,ca:today(),pr:[{id:nid(),tg:today(),at:now,x:'Penugasan dicatat',by:ME.nama,a:1}]};
  const ok=await putT(x);if(!ok)return FID&&tForm(FID);
  // nama baru (mis. pegawai korwas lain) otomatis masuk daftar pilihan
@@ -783,7 +879,7 @@ function rkData(){const[a,b,lbl]=rkRange(),q=nrm(RK.q).trim();
   return inP&&RK.st[x.st]&&!RK.xj.includes(x.j)&&!RK.xd.includes(x.j+'||'+(x.dj||''))&&(!q||qOf(x,q))}).sort((p,r)=>KWO.indexOf(p.st)-KWO.indexOf(r.st)||String(p.j).localeCompare(String(r.j))||String(p.dj||'').localeCompare(String(r.dj||''))||srt(p,r));return{L,lbl}}
 function rkLine(x){const c=RK.col,m=[x.tsm?'surat masuk '+fd(x.tsm):'',c.ns&&x.ns?'No. '+x.ns:'',c.aud&&x.aud?x.aud:'',c.tim&&x.kt?'katim '+x.kt+((x.ang||[]).length?', anggota '+x.ang.join(', '):''):'',
  c.wk?(x.st=='selesai'?(x.ts?'selesai '+fd(x.ts):'')+(x.ln?' ('+x.ln+')':''):(x.st!='pending'&&x.tm?'mulai '+fd(x.tm)+', ':'')+umur(x)+' hari kerja sejak masuk'+(x.tgt?', target '+fd(x.tgt):'')):''].filter(Boolean),p=c.pr?prL(x).find(z=>!z.a):null;
- return{t:x.rc,m:m.join('; '),p:p?`${fd(p.tg)}: ${p.x}`:'',k:x.ket||''}}
+ if(psOn(x)&&(x.ps||x.psn))m.push('progres: '+[PSL[x.ps],x.psn].filter(Boolean).join(' – '));return{t:x.rc,m:m.join('; '),p:p?`${fd(p.tg)}: ${p.x}`:'',k:x.ket||''}}
 const rkSub=A=>{const o=[];jsOf(A).forEach(j=>[...new Set(A.filter(x=>x.j==j).map(x=>x.dj||''))].forEach(d=>o.push({h:j+(d?' – '+d:''),items:A.filter(x=>x.j==j&&(x.dj||'')==d)})));return o};
 function rkGroups(L){if(RK.grp=='st')return KWO.filter(s=>RK.st[s]).map(s=>{const A=L.filter(x=>x.st==s);return{h:KWS[s],n:A.length,sub:rkSub(A)}});
  if(RK.grp=='kt')return[...new Set(L.map(x=>x.kt||'(ketua tim belum ditentukan)'))].sort().map(k=>{const A=L.filter(x=>(x.kt||'(ketua tim belum ditentukan)')==k);return{h:'Ketua tim: '+k,n:A.length,sub:rkSub(A).map(s=>({...s,st:1}))}});
@@ -814,7 +910,7 @@ function rkText(){const{L,lbl}=rkData(),M=rkMx(L);
  let s=`*${RK.jd}*\nPeriode: ${lbl}\nKeadaan per ${fd(today())}\n\nRingkasan: ${L.length} penugasan — `+M.S_.map(st=>`${M.c(null,st)} ${KWS[st].toLowerCase()}`).join(', ')+'\n';
  rkGroups(L).forEach((g,gi)=>{s+=`\n*${String.fromCharCode(65+gi)}. ${g.h.toUpperCase()} (${g.n})*\n`;if(!g.n)s+='-\n';g.sub.forEach(b=>{s+=`_${b.h}_\n`;b.items.forEach((x,i)=>{const r=rkLine(x);s+=`${i+1}. ${r.t.replace(/\s*\n\s*/g,' ')}${b.st?' ['+KWS[x.st]+']':''}${r.m?` (${r.m})`:''}\n${r.p?`   Progres: ${r.p}\n`:''}`})})});return s}
 const rkCopy=async()=>{const s=rkText();try{await navigator.clipboard.writeText(s);tt2('Rekap disalin — tinggal tempel di WA / email')}catch(e){prompt('Salin teks berikut:',s)}};
-const xRow=(x,i)=>({'No':i+1,'Status':KWS[x.st],'Jenis':x.j,'Detail jenis':x.dj||'','Tanggal surat masuk':x.tsm?fd(x.tsm):'','Nomor surat':x.ns||'','Rincian':x.rc,'Satker / auditi':x.aud||'','Nomor LHP':x.lhp||'','Dalnis':x.dal||'','Ketua tim':x.kt||'','Anggota':(x.ang||[]).join(', '),
+const xRow=(x,i)=>({'No':i+1,'Status':KWS[x.st],'Progres tahap':psOn(x)?PSL[x.ps]||'':'','Catatan progres tahap':psOn(x)?x.psn||'':'','Jenis':x.j,'Detail jenis':x.dj||'','Tanggal surat masuk':x.tsm?fd(x.tsm):'','Nomor surat':x.ns||'','Rincian':x.rc,'Satker / auditi':x.aud||'','Nomor LHP':x.lhp||'','Dalnis':x.dal||'','Ketua tim':x.kt||'','Anggota':(x.ang||[]).join(', '),
  'Hari kantor':(x.dk||[]).length||'','Hari dinas luar':(x.dl||[]).length||'','Pelaksanaan':tAll(x).length?fd(tAll(x)[0])+(tAll(x).length>1?' s.d. '+fd(akhir(x)):''):'','Mulai':x.tm?fd(x.tm):'','Target':x.tgt?fd(x.tgt):'','Selesai':x.ts?fd(x.ts):'',
  'Umur (hari kerja)':x.st=='selesai'?'':umur(x),'Nomor ND':x.nd||'','Nomor SPT':x.spt||'','Nomor laporan':x.ln||'','Tanggal laporan':x.tlp?fd(x.tlp):'','Progres terakhir':(prL(x).find(z=>!z.a)||{}).x||'','Keterangan':x.ket||'','Link folder':x.fo||''});
 function rkXl(){const{L,lbl}=rkData(),M=rkMx(L),w=XLSX.utils.book_new();
