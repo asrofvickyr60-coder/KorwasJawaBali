@@ -584,7 +584,8 @@ selX=x=>x.st=='selesai'?(x.tlp||x.ts||''):'',
 telatL=x=>{const a=akhir(x),e=x.tlp||(x.st=='selesai'?x.ts:'');return a&&e&&e>a?hk(a,e):null},
 drv=x=>{x.tm=mulaiX(x);x.tgt=akhir(x);x.ts=x.st=='selesai'?(x.tlp||x.ts||today()):'';return x},
 prL=x=>(x.pr||[]).slice().sort((a,b)=>String(b.tg).localeCompare(String(a.tg))||b.id-a.id),
-srt=(a,b)=>String(a.tsm||'').localeCompare(String(b.tsm||''))||String(a.id).localeCompare(String(b.id)),
+// urutan semua daftar: tanggal pelaksanaan terakhir paling baru di atas; belum ada tgl pelaksanaan → tanggal surat masuk/permohonan
+tgK=x=>akhir(x)||x.tsm||'',srt=(a,b)=>tgK(b).localeCompare(tgK(a))||String(b.tsm||'').localeCompare(String(a.tsm||''))||String(b.id).localeCompare(String(a.id)),
 badge=st=>`<span class="st st-${st}" title="${KWD[st]}">${KWS[st]}</span>`,
 jsOf=L=>[...new Set([...(S.cfg.jp||[]),...L.map(x=>x.j)])].filter(j=>L.some(x=>x.j==j));
 // hak akses (diterapkan di tampilan; server membatasi hapus lewat RLS)
@@ -695,7 +696,7 @@ function render(){if(!LOADED)return;PEND=0;document.body.classList.add('app');do
 // ---------- kepala dashboard: hari & tanggal + daftar singkat penugasan berjalan ----------
 const rcP=x=>{const t=String(x.rc||'').split('\n')[0].trim()||lbT(x);return t.length>90?t.slice(0,88)+'…':t};
 const tgP=x=>{const A=tAll(x);return A.length?(A.length>1?fds(A[0])+' – '+fds(akhir(x)):fds(A[0])):x.tm?'mulai '+fds(x.tm):'tgl belum diisi'};
-function hariB(){const t=today(),L=S.t.filter(x=>x.st=='proses').sort((a,b)=>String(tAll(a)[0]||'9').localeCompare(String(tAll(b)[0]||'9'))),
+function hariB(){const t=today(),L=S.t.filter(x=>x.st=='proses').sort(srt),
  nw=L.filter(x=>tAll(x).includes(t)).length;
  return `<div class="hb"><div class="hb1"><small>Hari ini</small><b>${hari(t)}</b><span>${D(t).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}</span>${libur(t)?`<em>${esc(H()[t]||'Libur')}</em>`:''}</div>
  <div class="hb2"><div class="hbh"><b>Penugasan yang sedang berjalan</b><small>${L.length} penugasan${nw?` · ${nw} dilaksanakan hari ini`:''}</small></div>
@@ -731,14 +732,14 @@ function wkGrid(dash){const w0=addD(monday(today()),WK*7),t=today(),P=KN(),
  return `<div class="card">${head}<div class="wgw"><table class="wg"><colgroup><col class="cn">${D7.map(()=>'<col>').join('')}</colgroup>
  <thead><tr><th>Nama</th>${D7.map(d=>{const f=freeN(d);return `<th class="${d==t?'td':''} ${libur(d)?'lb':''}">${hr3(d)}, ${fds(d)}${d==t?' · hari ini':''}${f===null?`<small class="no">${esc(H()[d]||'libur')}</small>`:d<t?'<small class="no">&nbsp;</small>':`<small class="${f?'':'no'}">${f?f+' orang kosong':'semua terisi'}</small>`}</th>`}).join('')}</tr></thead>
  <tbody>${P.map(p=>`<tr><td class="nm">${who(p)}${anyF?`<small>${fw(p)?`<b>${fw(p)} hari kosong</b>`:'penuh'} ${WK?'':'s.d. Jumat'}</small>`:''}</td>${D7.map(d=>cell(p,d)).join('')}</tr>`).join('')}</tbody></table></div>
- <div class="lg">🚗 Dinas luar · 🏢 Di kantor<b style="background:#f3fbf8;border:1px dashed #9fdcc9"></b>Kosong (belum ada jadwal pelaksanaan) · warna sama = penugasan yang sama · klik penugasan untuk detail</div>${tcLeg(TV)}</div>`}
+ <div class="lg">🚗 Dinas luar · 🏢 Di kantor<b style="background:#f3fbf8;border:1px dashed #9fdcc9"></b>Kosong (belum ada jadwal pelaksanaan) · warna sama = penugasan yang sama · klik penugasan untuk detail</div>${tcLeg(TV.slice().sort(srt))}</div>`}
 const tglR=x=>{const A=tAll(x);return A.length?(A.length>1?fds(A[0])+' – '+fd(akhir(x)):fd(A[0])):x.tm?'mulai '+fd(x.tm):'<span class="mt">tgl pelaksanaan belum diisi</span>'};
 function orangB(){const t=today();
  const it=x=>{const tl=lapTelat(x),now=tAll(x).includes(t);
   return `<div class="pi" onclick="tForm('${x.id}')" title="${esc(x.rc)}${x.aud?'\n🏢 '+esc(x.aud):''}"><div class="pi1">${now?((x.dl||[]).includes(t)?'🚗 ':'🏢 '):''}<b>${esc(lbT(x))}</b></div><div class="pi2">📅 ${tglR(x)}${x.st=='lapor'&&tl!==null?` · <b style="color:var(--red)">lewat ${tl} hk</b>`:''}${x.fo?' · '+foL(x):''}</div>${psChip(x)}</div>`};
  return `<div class="card"><div class="hd"><h2 style="margin:0">👥 Lagi ngerjain apa</h2><small style="color:var(--m)">pelaksanaan berlangsung & laporan yang belum terbit, per orang</small></div><div class="pg6">${MA().map(m=>{const n=m.nama,A=S.t.filter(x=>x.st!='selesai'&&onTeam(x,n)),
-  pr=A.filter(x=>x.st=='proses').sort((a,b)=>String(tAll(a)[0]||a.tm||'9').localeCompare(String(tAll(b)[0]||b.tm||'9'))),
-  lp=A.filter(x=>x.st=='lapor').sort((a,b)=>String(akhir(a)||'9').localeCompare(String(akhir(b)||'9'))),pd=A.filter(x=>x.st=='pending').length,td=tOn(n,t),nf=nextFree(n);
+  pr=A.filter(x=>x.st=='proses').sort(srt),
+  lp=A.filter(x=>x.st=='lapor').sort(srt),pd=A.filter(x=>x.st=='pending').length,td=tOn(n,t),nf=nextFree(n);
   const sec=(L,h,st)=>`<div class="ps2 ${st}"><h4>${h}<span>${L.length}</span></h4>${L.slice(0,4).map(it).join('')||'<small class="mt" style="font-size:12px">Tidak ada</small>'}${L.length>4?`<a href="#" class="more" onclick="DF.p='${esc(n)}';DF.st='${st}';go('daftar');return false">+${L.length-4} lainnya</a>`:''}</div>`;
   return `<div class="pc" style="--pc:${clr(n)}"><div class="pch"><i class="pav">${esc(ini(n))}</i><div><b>${esc(n)}</b><small>${PERAN[m.peran]||''}</small></div></div>
   <div class="pnw">${td.length?'Hari ini: '+td.map(x=>(x.dl||[]).includes(t)?'🚗 dinas luar':'🏢 di kantor').filter((v,i,a)=>a.indexOf(v)==i).join(' + '):libur(t)?'<span style="color:var(--red)">Hari ini libur</span>':'<b style="color:#0a7262">✓ Hari ini kosong</b>'}</div>
@@ -747,7 +748,7 @@ function orangB(){const t=today();
 // daftar penugasan yang masih pelaksanaan & proses pelaporan (tidak dikelompokkan per tim)
 let BLF='';
 function timB(){const all=S.t.filter(psOn),n=s=>all.filter(x=>x.st==s).length,
- L=all.filter(x=>!BLF||x.st==BLF).sort((a,b)=>KWO.indexOf(a.st)-KWO.indexOf(b.st)||String(tAll(a)[0]||a.tm||'9').localeCompare(String(tAll(b)[0]||b.tm||'9'))||srt(a,b));
+ L=all.filter(x=>!BLF||x.st==BLF).sort(srt);
  const tim=x=>[x.kt&&who(x.kt,'Katim'),...(x.ang||[]).map(n=>who(n))].filter(Boolean).join('')||'<small class="mt">Tim belum ditentukan</small>';
  const row=x=>{const tl=lapTelat(x);return `<tr class="r" onclick="tForm('${x.id}')" title="${esc(x.rc)}"><td><span class="st st-${x.st}">${KWS[x.st]}</span></td>
   <td><div class="rt"><span class="tag">${esc(x.j)}</span>${x.dj?' '+esc(x.dj)+' ·':''} ${esc(String(x.rc).slice(0,160))}</div><div class="rs">📅 ${tglR(x)}${x.aud?' · 🏢 '+esc(x.aud):''}${tl!==null?` · <b style="color:var(--red)">lap. lewat ${tl} hk</b>`:''}</div></td>
@@ -818,7 +819,7 @@ async function delPr(id,pid){if(!confirm('Hapus catatan progres ini?'))return;aw
 // =====================================================================
 function saya(){const n=ME.nama,M=S.t.filter(x=>onTeam(x,n)),act=M.filter(x=>x.st!='selesai'),by=s=>act.filter(x=>x.st==s).sort(srt),
  ag=[...Array(21).keys()].map(i=>addD(today(),i)).map(d=>[d,M.filter(x=>tAll(x).includes(d))]).filter(a=>a[1].length),
- dn=M.filter(x=>x.st=='selesai'&&x.ts>=addD(today(),-60)).sort((a,b)=>b.ts.localeCompare(a.ts)),
+ dn=M.filter(x=>x.st=='selesai'&&x.ts>=addD(today(),-60)).sort(srt),
  rl=[['dal','Dalnis'],['kt','Katim'],['ang','Anggota']].map(([k,l])=>[l,act.filter(x=>k=='ang'?(x.ang||[]).includes(n):x[k]==n).length]);
  const col=(s,ic)=>`<div><h3 style="font-size:15px;color:var(--ink)">${ic} ${KWS[s]} (${by(s).length})</h3>${by(s).map(card).join('')||`<div class="card"><small class="mt">Tidak ada.</small></div>`}</div>`;
  return `<div class="card"><div class="stt">${rl.map(([l,v])=>`<div><small>Aktif sebagai ${l}</small><b>${v}</b></div>`).join('')}<div style="flex:2"><small>Jadwal saya 3 minggu ke depan</small>${ag.length?ag.slice(0,6).map(([d,L])=>`<div style="font-size:13px">${hr3(d)} ${fds(d)} · ${L.map(x=>((x.dl||[]).includes(d)?'🚗 ':'🏢 ')+esc(x.dj||x.j)).join(', ')}</div>`).join('')+(ag.length>6?`<small>+${ag.length-6} hari lagi</small>`:''):'<b style="font-size:14px">Belum ada jadwal</b>'}</div></div></div>
@@ -865,7 +866,7 @@ const KMO=new Set(),PSX=new Map();
 function kanMini(B,kk){const op=PSX.has(kk)?PSX.get(kk):(DF.st||'');
  const tiles=`<div class="stl">${KWO.map(s=>{const n=B.filter(x=>x.st==s).length;return `<button type="button" class="stc ${s} ${op==s?'on':''} ${n?'':'z'}" data-k="${esc(kk)}" data-s="${s}" onclick="pxT(this)" ondragover="event.preventDefault();this.classList.add('dz')" ondragleave="this.classList.remove('dz')" ondrop="kDrop(event,'${s}')" title="${KWD[s]}"><small>${KWS[s]}</small><b>${n}</b><span class="stx">${op==s?'▴ tutup':n?'▾ lihat':''}</span></button>`}).join('')}</div>`;
  if(!op)return tiles;
- let A=B.filter(x=>x.st==op).sort(srt);if(op=='selesai')A=A.sort((a,b)=>String(b.ts).localeCompare(String(a.ts)));
+ let A=B.filter(x=>x.st==op).sort(srt);
  const kk2=kk+'|'+op,lim=op=='selesai'?9:24,more=A.length>lim&&!KMO.has(kk2)?A.length-lim:0;if(more)A=A.slice(0,lim);
  return tiles+`<div class="kgr ${op}">${A.map(kCard).join('')||`<small class="mt" style="padding:4px 2px">Tidak ada penugasan berstatus ${KWS[op].toLowerCase()}.</small>`}${more?`<button class="s kmore" data-k="${esc(kk2)}" onclick="KMO.add(this.dataset.k);$('kanb').innerHTML=kanB()">+${more} lainnya</button>`:''}</div>`}
 function pxT(e){const k=e.dataset.k,s=e.dataset.s,op=PSX.has(k)?PSX.get(k):(DF.st||'');PSX.set(k,op==s?'':s);$('kanb').innerHTML=kanB()}
@@ -891,7 +892,7 @@ function dafL(){const L=dfL(),q=nrm(DF.q).split(/\s+/).filter(Boolean),qa=!!q.le
  if(!L.length)return '<div class="card"><small class="mt">Tidak ada penugasan yang cocok dengan filter.</small></div>';
  return jsOf(L).map(j=>{const A=L.filter(x=>x.j==j),ds=dsOf(j,A);
  return `<details class="cl card" ${TCL.has(j)?'':'open'} data-j="${esc(j)}" ontoggle="this.open?TCL.delete(this.dataset.j):TCL.add(this.dataset.j)"><summary><span class="tag">${esc(j)}</span> ${A.length} penugasan<span class="cnt">${cntSt(A)}</span></summary><div class="in">
- ${ds.map(d=>{const B=A.filter(x=>(x.dj||'')==d).sort((a,b)=>KWO.indexOf(a.st)-KWO.indexOf(b.st)||srt(a,b)),k=j+'||'+d,op=DJO.has(k)||qa||ds.length==1&&B.length<=5;
+ ${ds.map(d=>{const B=A.filter(x=>(x.dj||'')==d).sort(srt),k=j+'||'+d,op=DJO.has(k)||qa||ds.length==1&&B.length<=5;
  return `<details class="dj" ${op?'open':''} data-k="${esc(k)}" ontoggle="this.open?DJO.add(this.dataset.k):DJO.delete(this.dataset.k)"><summary>↳ ${esc(d||'Tanpa detail jenis')} <small style="color:var(--m);font-weight:400">(${B.length})</small><span class="cnt">${cntSt(B)}</span></summary>
  <table class="tb kt2"><thead><tr><th style="width:30px">No</th><th style="width:150px">Nomor ND &amp; SPT</th><th>Rincian</th><th style="width:220px">Tim</th><th style="width:230px">Status &amp; progres</th><th style="width:140px">Tanggal pelaksanaan</th><th style="width:150px">Waktu</th><th style="width:80px"></th></tr></thead><tbody>
  ${B.map((x,i)=>{const p=prL(x)[0];return `<tr><td>${i+1}</td><td><small style="color:var(--m)">ND</small> ${x.nd?hl(x.nd,q):'<span class="mt">—</span>'}<br><small style="color:var(--m)">SPT</small> ${x.spt?hl(x.spt,q):'<span class="mt">—</span>'}</td><td style="white-space:pre-line"><a href="#" style="text-decoration:none;color:inherit" onclick="tForm('${x.id}');return false">${hl(x.rc,q)}</a>${x.aud?`<br><small>🏢 ${esc(x.aud)}</small>`:''}${x.fo?`<br>${foL(x)}`:''}${p?`<br><small style="color:var(--m)">📝 ${fd(p.tg)} · ${esc(p.by||'')}: ${esc(String(p.x).slice(0,110))}</small>`:''}</td><td>${timH(x)}</td><td>${selSt(x)}${psEd(x)}</td><td>${tglP(x)}</td><td>${waktu(x)}</td><td class="ac"><button class="x" style="color:var(--ink)" onclick="tForm('${x.id}')">${canEdit(x)?'Edit':'Buka'}</button>${canDel(x)?`<button class="x" onclick="tDel('${x.id}')">Hapus</button>`:''}</td></tr>`}).join('')}</tbody></table></details>`}).join('')}</div></details>`}).join('')}
@@ -924,7 +925,7 @@ function jBulan(){const y=JM.getFullYear(),m=JM.getMonth(),n=new Date(y,m+1,0).g
  <div class="jw" style="margin-top:10px"><table class="jm3" style="width:${172+n*36}px"><thead><tr><th class="nm"></th>${days.map(d=>`<th class="${dc(d)}" title="${hari(d)}${H()[d]?' · '+esc(H()[d]):''}">${+d.slice(8)}<br><span style="font-weight:400">${hr3(d).slice(0,2)}</span></th>`).join('')}</tr></thead>
  <tbody>${ppl.map(p=>`<tr><td class="nm">${who(p)}</td>${days.map(d=>cell(p,d)).join('')}</tr>`).join('')}</tbody></table></div>
  <div class="lg">Angka = jumlah penugasan orang itu di hari tersebut · klik angka untuk melihat kartu penugasannya<b style="background:#d6f3ec;border:1px solid #0e9384"></b>ada dinas luar<b style="background:#fdf3f2;border:1px solid #f3c7c3"></b>Libur</div></div>`}
-function jmOpen(p,d){const L=S.t.filter(x=>(p?onTeam(x,p):KN().some(q=>onTeam(x,q)))&&tAll(x).includes(d)).sort((a,b)=>KWO.indexOf(a.st)-KWO.indexOf(b.st)||srt(a,b));tcSet(L);
+function jmOpen(p,d){const L=S.t.filter(x=>(p?onTeam(x,p):KN().some(q=>onTeam(x,q)))&&tAll(x).includes(d)).sort(srt);tcSet(L);
  const kc=x=>{const A=tAll(x),l=(x.dl||[]).includes(d),i=A.indexOf(d)+1,tl=lapTelat(x);
   return `<div class="jpc" style="${tcS(x)}"><div class="hd"><span><span class="tag">${esc(x.j)}</span> <b>${esc(x.dj||'')}</b></span>${badge(x.st)}</div>
   <div class="jpr">${esc(x.rc)}</div>
