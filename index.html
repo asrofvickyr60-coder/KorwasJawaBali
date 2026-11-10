@@ -452,6 +452,28 @@ select.ps{width:auto;border:0;padding:4px 6px;cursor:pointer;border-radius:8px}
 .kgr{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;padding:0 10px 10px}.kgr .kcard{margin:0}.kgr .kmore{grid-column:1/-1}
 .kcard .km2{font-size:11.5px;color:var(--m);margin-top:2px}.kcard .pse select{font-size:11.5px}.kcard .pse input{font-size:12px;padding:3px 7px}
 @media (max-width:900px){.stl{grid-template-columns:1fr 1fr}.bcg,.tgb{grid-template-columns:1fr}.tg2{grid-template-columns:1fr}.bc-r{grid-template-columns:120px 1fr}}
+/* ===== PAPAN STATUS: tampilan B (ubin warna solid) — 2026-11-10 ===== */
+.pj{overflow:hidden}
+.pj>summary{background:linear-gradient(135deg,#23409a,#3557d4);color:#fff}
+.pj>summary .tag{background:#fff;color:#23409a}
+.pj>summary .pgt,.pj>summary .pgt b{color:#dbe4ff!important}
+.pj>summary .dn:before{background:#2c4ab5}.pj>summary .dn b{color:#fff}
+.pj>summary .st{background:#ffffff26!important;color:#fff!important;border-color:transparent!important}
+.pj .in{padding:10px 12px 12px;background:#f3f6fb}
+.pd{background:#fff!important;border:1px solid #dfe5ee!important;border-radius:10px!important}
+.pd>summary{background:#fff}
+.stc{border:0!important;color:#fff;border-radius:12px;padding:10px 14px}
+.stc small,.stc .stx{color:#ffffffd9!important}.stc b{color:#fff!important;font-size:26px}
+.stc.pending{background:#f97316!important}.stc.proses{background:#3557d4!important}.stc.lapor{background:#8b5cf6!important}.stc.selesai{background:#0e9384!important}
+.stc.z{background:transparent!important;border:1.5px dashed #d3dae5!important;opacity:1}
+.stc.z small,.stc.z b,.stc.z .stx{color:#b3bccb!important}
+.stc.on{box-shadow:0 0 0 3px #fff,0 0 0 5px #0f1b2d;transform:translateY(-1px)}
+.kgr{padding:10px}
+.kgr .kcard{border-left-width:0;border-top:4px solid;box-shadow:0 1px 3px rgba(15,27,45,.08)}
+.kgr .kcard.pending{border-top-color:#f97316}.kgr .kcard.proses{border-top-color:#3557d4}.kgr .kcard.lapor{border-top-color:#8b5cf6}.kgr .kcard.selesai{border-top-color:#0e9384}
+.pd>summary>span:first-child{font-size:16.5px;font-weight:800;color:#0f1b2d;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+.pd>summary>span:first-child:before{content:'';width:5px;height:22px;border-radius:3px;background:#3557d4;flex:none}
+.pd>summary>span:first-child small{font-size:13px;font-weight:600!important;color:#475569!important;background:#eef2f8;border-radius:999px;padding:1px 8px}
 </style></head><body>
 <nav id="nv"></nav><main id="v"></main><div id="ov"></div><datalist id="pgl"></datalist><div id="tt" style="position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 14px;border-radius:8px;display:none;z-index:50;font-size:14px"></div>
 <script>
@@ -813,7 +835,7 @@ function kanB(){const L0=dfL(1),qa=!!nrm(DF.q).trim(),fs=DF.st,L=fs?L0.filter(x=
  return chips+pgSum(L0)+
  jsOf(L).map(j=>{const A=L0.filter(x=>x.j==j),ds=dsOf(j,L.filter(x=>x.j==j)),P=pgH(A);
  return `<details class="pj" ${PJC.has(j)?'':'open'} data-j="${esc(j)}" ontoggle="this.open?PJC.delete(this.dataset.j):PJC.add(this.dataset.j)"><summary><span><span class="tag">${esc(j)}</span> ${A.length} penugasan</span>${P.bar}${P.num}</summary><div class="in">
- ${ds.map(d=>{const B=A.filter(x=>(x.dj||'')==d),k=j+'||'+d,Q=pgH(B);return `<details class="pd" ${PDO.has(k)||qa||fs?'open':''} data-k="${esc(k)}" ontoggle="this.open?PDO.add(this.dataset.k):PDO.delete(this.dataset.k)"><summary><span>↳ ${esc(d||'Tanpa detail jenis')} <small style="color:var(--m);font-weight:400">(${B.length})</small></span>${Q.bar}${Q.num}</summary>${kanMini(B,k)}</details>`}).join('')}</div></details>`}).join('')}
+ ${ds.map(d=>{const B=A.filter(x=>(x.dj||'')==d),k=j+'||'+d,Q=pgH(B);return `<details class="pd" ${PDO.has(k)||qa||fs?'open':''} data-k="${esc(k)}" ontoggle="this.open?PDO.add(this.dataset.k):PDO.delete(this.dataset.k)"><summary><span>${esc(d||'Tanpa detail jenis')} <small style="color:var(--m);font-weight:400">(${B.length})</small></span>${Q.bar}${Q.num}</summary>${kanMini(B,k)}</details>`}).join('')}</div></details>`}).join('')}
 async function kDrop(e,st){e.preventDefault();document.querySelectorAll('.kcol,.stc').forEach(c=>c.classList.remove('dz'));const id=e.dataTransfer.getData('text/plain'),x=fT(id);
  if(!x||x.st==st)return;if(!canEdit(x))return alert('Status penugasan ini hanya bisa diubah Korwas, ketua timnya, atau pembuatnya.');await setSt(id,st)}
 
