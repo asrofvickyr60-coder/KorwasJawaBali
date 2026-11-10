@@ -387,6 +387,17 @@ select.ps{width:auto;border:0;padding:4px 6px;cursor:pointer;border-radius:8px}
 .tgb{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}.tgb h4{margin:0 0 2px;font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:.05em}
 .tr2{border-top:1px solid #eef1f6;padding:6px 0;cursor:pointer;min-width:0}.tgb h4+.tr2{border-top:0}.tr2:hover .ar-t{color:var(--ink2)}
 .tr2a{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tr2b{font-size:12px;color:var(--m)}
+/* ===== link folder di kartu ===== */
+.fol{display:inline-flex;align-items:center;gap:3px;font-size:11.5px;font-weight:600;color:#1d4ed8;background:#eef3ff;border:1px solid #d5e0fb;border-radius:999px;padding:1px 8px;text-decoration:none;white-space:nowrap;flex:none}.fol:hover{background:#dfe8ff;border-color:#b6c8f5}
+.fon{font-size:11.5px;color:#94a3b8;white-space:nowrap}
+.kcard .fow{margin-top:4px}
+/* ===== dashboard: daftar penugasan berjalan ===== */
+.bl{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}.bl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#7a8699;font-weight:700;padding:6px 8px;border-bottom:1px solid var(--l)}
+.bl td{padding:8px;border-bottom:1px solid #eef1f6;vertical-align:top}.bl tr.r{cursor:pointer}.bl tr.r:hover td{background:#f7f9fe}
+.bl .rt{font-weight:600;color:#1f2937;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.bl .rs{font-size:12px;color:var(--m);margin-top:2px}
+.bl td.tm .who{margin:1px 3px 1px 0}.bl .pse{margin-top:0}
+.blf{display:flex;gap:6px;flex-wrap:wrap}
+@media (max-width:900px){.bl thead{display:none}.bl tr{display:block;border-bottom:1px solid #eef1f6;padding:6px 0}.bl td{display:block;border:0;padding:3px 8px}}
 /* ===== form: tanggal otomatis ===== */
 .tinf{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:2px 0 10px}.tinf>div{background:#f6f8fc;border:1px solid #e6ebf3;border-radius:10px;padding:7px 10px;min-width:0}
 .tinf small{display:block;font-size:11.5px;color:var(--m)}.tinf b{display:block;font-size:14.5px;margin:1px 0}
@@ -545,6 +556,7 @@ const selSt=x=>canEdit(x)?`<select class="st st-${x.st}" onchange="setSt('${x.id
 // ---------- PROGRES TAHAP (pelaksanaan & penyusunan laporan): pilihan + catatan ----------
 const PSO=[['tim','Sedang dikerjakan tim'],['data','Menunggu data'],['katim','Cek katim'],['dalnis','Cek dalnis']],PSL=Object.fromEntries(PSO),
 psOn=x=>x.st=='proses'||x.st=='lapor',
+foL=(x,t='📁 Folder')=>x.fo?`<a class="fol" href="${esc(x.fo)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" onpointerdown="event.stopPropagation()" draggable="false" title="Buka folder bersama: ${esc(x.fo)}">${t}</a>`:'',
 psChip=x=>psOn(x)&&(x.ps||x.psn)?`<span class="psc">${x.ps?`<span class="ps ps-${x.ps}">${esc(PSL[x.ps]||x.ps)}</span>`:''}${x.psn?`<span class="psn" title="${esc(x.psn)}">${esc(x.psn)}</span>`:''}</span>`:'',
 psEd=x=>!psOn(x)?'':canProg(x)?`<div class="pse" onclick="event.stopPropagation()" onpointerdown="const c=this.closest('.kcard');if(c&&c.draggable){c.draggable=false;this.dataset.dr=1}" onfocusout="const c=this.closest('.kcard');if(c&&this.dataset.dr)c.draggable=true"><select class="ps ps-${x.ps||'none'}" onchange="setPs('${x.id}',this.value)" title="Progres ${KWS[x.st].toLowerCase()}"><option value="">— progres —</option>${PSO.map(([k,l])=>`<option value="${k}" ${x.ps==k?'selected':''}>${l}</option>`).join('')}</select><input value="${esc(x.psn||'')}" placeholder="catatan progres…" title="Catatan progres (Enter untuk simpan)" onchange="setPs('${x.id}',undefined,this.value)" onkeydown="if(event.key=='Enter')this.blur()"></div>`:(psChip(x)||'<small class="mt">progres belum diisi</small>');
 
@@ -661,7 +673,7 @@ function wkGrid(dash){const w0=addD(monday(today()),WK*7),t=today(),P=KN(),
 const tglR=x=>{const A=tAll(x);return A.length?(A.length>1?fds(A[0])+' – '+fd(akhir(x)):fd(A[0])):x.tm?'mulai '+fd(x.tm):'<span class="mt">tgl pelaksanaan belum diisi</span>'};
 function orangB(){const t=today();
  const it=x=>{const tl=lapTelat(x),now=tAll(x).includes(t);
-  return `<div class="pi" onclick="tForm('${x.id}')" title="${esc(x.rc)}${x.aud?'\n🏢 '+esc(x.aud):''}"><div class="pi1">${now?((x.dl||[]).includes(t)?'🚗 ':'🏢 '):''}<b>${esc(lbT(x))}</b></div><div class="pi2">📅 ${tglR(x)}${x.st=='lapor'&&tl!==null?` · <b style="color:var(--red)">lewat ${tl} hk</b>`:''}</div>${psChip(x)}</div>`};
+  return `<div class="pi" onclick="tForm('${x.id}')" title="${esc(x.rc)}${x.aud?'\n🏢 '+esc(x.aud):''}"><div class="pi1">${now?((x.dl||[]).includes(t)?'🚗 ':'🏢 '):''}<b>${esc(lbT(x))}</b></div><div class="pi2">📅 ${tglR(x)}${x.st=='lapor'&&tl!==null?` · <b style="color:var(--red)">lewat ${tl} hk</b>`:''}${x.fo?' · '+foL(x):''}</div>${psChip(x)}</div>`};
  return `<div class="card"><div class="hd"><h2 style="margin:0">👥 Lagi ngerjain apa</h2><small style="color:var(--m)">pelaksanaan berlangsung & laporan yang belum terbit, per orang</small></div><div class="pg6">${MA().map(m=>{const n=m.nama,A=S.t.filter(x=>x.st!='selesai'&&onTeam(x,n)),
   pr=A.filter(x=>x.st=='proses').sort((a,b)=>String(tAll(a)[0]||a.tm||'9').localeCompare(String(tAll(b)[0]||b.tm||'9'))),
   lp=A.filter(x=>x.st=='lapor').sort((a,b)=>String(akhir(a)||'9').localeCompare(String(akhir(b)||'9'))),pd=A.filter(x=>x.st=='pending').length,td=tOn(n,t),nf=nextFree(n);
@@ -670,16 +682,18 @@ function orangB(){const t=today();
   <div class="pnw">${td.length?'Hari ini: '+td.map(x=>(x.dl||[]).includes(t)?'🚗 dinas luar':'🏢 di kantor').filter((v,i,a)=>a.indexOf(v)==i).join(' + '):libur(t)?'<span style="color:var(--red)">Hari ini libur</span>':'<b style="color:#0a7262">✓ Hari ini kosong</b>'}</div>
   ${sec(pr,'▶ Penugasan berlangsung','proses')}${sec(lp,'📝 Belum selesai pelaporan','lapor')}
   <div class="pf"><span>${nf?`Kosong berikutnya: <b>${nf==t?'hari ini':hr3(nf)+' '+fds(nf)}</b>`:'—'}</span>${pd?`<a href="#" onclick="DF.p='${esc(n)}';DF.st='pending';go('daftar');return false" title="Lihat penugasan pending">${pd} pending</a>`:''}</div></div>`}).join('')}</div></div>`+timB()}
-// kumpulan per tim (ketua tim + anggota yang sama) — penugasan yang masih pelaksanaan & belum pelaporan
-function timB(){const G=new Map();
- S.t.filter(psOn).forEach(x=>{const ang=[...(x.ang||[])].sort(),k=(x.kt||'')+'|'+ang.join(',');if(!G.has(k))G.set(k,{kt:x.kt||'',ang,L:[]});G.get(k).L.push(x)});
- const R=[...G.values()].sort((a,b)=>b.L.length-a.L.length||a.kt.localeCompare(b.kt));
- const row=x=>{const tl=lapTelat(x);return `<div class="tr2" onclick="tForm('${x.id}')" title="${esc(x.rc)}"><div class="tr2a"><span class="tag">${esc(x.j)}</span> <b>${esc(x.dj||'')}</b> <span class="ar-t">${esc(String(x.rc).slice(0,120))}</span></div><div class="tr2b">📅 ${tglR(x)}${x.aud?' · 🏢 '+esc(x.aud):''}${tl!==null?` · <b style="color:var(--red)">lap. lewat ${tl} hk</b>`:''}</div>${psEd(x)}</div>`};
- return `<div class="card"><div class="hd"><h2 style="margin:0">🧩 Per tim — masih pelaksanaan & belum pelaporan</h2><small style="color:var(--m)">dikelompokkan menurut ketua tim + anggota</small></div>
- ${R.length?`<div class="tg2">${R.map(g=>{const Pr=g.L.filter(x=>x.st=='proses').sort(srt),Lp=g.L.filter(x=>x.st=='lapor').sort(srt);
-  return `<div class="tgc" style="--pc:${g.kt?clr(g.kt):'#98a2a8'}"><div class="tgh"><span>${g.kt?who(g.kt,'Katim'):'<small class="mt">Ketua tim belum ditentukan</small>'}${g.ang.map(n=>who(n)).join('')}</span><span class="tgn">${Pr.length?`<span class="st st-proses">${Pr.length} pelaksanaan</span>`:''}${Lp.length?`<span class="st st-lapor">${Lp.length} belum pelaporan</span>`:''}</span></div>
-  <div class="tgb"><div><h4>▶ Pelaksanaan</h4>${Pr.map(row).join('')||'<small class="mt">—</small>'}</div><div><h4>📝 Belum pelaporan</h4>${Lp.map(row).join('')||'<small class="mt">—</small>'}</div></div></div>`}).join('')}</div>`
- :'<small class="mt">Tidak ada penugasan yang sedang dilaksanakan atau menunggu laporan.</small>'}</div>`}
+// daftar penugasan yang masih pelaksanaan & proses pelaporan (tidak dikelompokkan per tim)
+let BLF='';
+function timB(){const all=S.t.filter(psOn),n=s=>all.filter(x=>x.st==s).length,
+ L=all.filter(x=>!BLF||x.st==BLF).sort((a,b)=>KWO.indexOf(a.st)-KWO.indexOf(b.st)||String(tAll(a)[0]||a.tm||'9').localeCompare(String(tAll(b)[0]||b.tm||'9'))||srt(a,b));
+ const tim=x=>[x.kt&&who(x.kt,'Katim'),...(x.ang||[]).map(n=>who(n))].filter(Boolean).join('')||'<small class="mt">Tim belum ditentukan</small>';
+ const row=x=>{const tl=lapTelat(x);return `<tr class="r" onclick="tForm('${x.id}')" title="${esc(x.rc)}"><td><span class="st st-${x.st}">${KWS[x.st]}</span></td>
+  <td><div class="rt"><span class="tag">${esc(x.j)}</span>${x.dj?' '+esc(x.dj)+' ·':''} ${esc(String(x.rc).slice(0,160))}</div><div class="rs">📅 ${tglR(x)}${x.aud?' · 🏢 '+esc(x.aud):''}${tl!==null?` · <b style="color:var(--red)">lap. lewat ${tl} hk</b>`:''}</div></td>
+  <td class="tm">${tim(x)}</td><td>${psEd(x)||psChip(x)||'<small class="mt">—</small>'}</td><td>${foL(x)||'<span class="fon">—</span>'}</td></tr>`};
+ const fb=(v,lb,c)=>`<button class="sfb" style="${BLF==v?'border-color:var(--ink);background:#eef3ff':''}" onclick="BLF='${v}';rr()">${lb}<span>${c}</span></button>`;
+ return `<div class="card"><div class="hd"><h2 style="margin:0">🧩 Penugasan berjalan — pelaksanaan & proses pelaporan</h2><div class="blf">${fb('','Semua',all.length)}${fb('proses',KWS.proses,n('proses'))}${fb('lapor',KWS.lapor,n('lapor'))}</div></div>
+ ${L.length?`<table class="bl"><thead><tr><th style="width:120px">Status</th><th>Penugasan</th><th style="width:240px">Tim</th><th style="width:250px">Progres</th><th style="width:90px">Folder</th></tr></thead><tbody>${L.map(row).join('')}</tbody></table>`
+ :'<small class="mt">Tidak ada penugasan yang sedang dilaksanakan atau dalam proses pelaporan.</small>'}</div>`}
 let PGO=false;
 function perhatian(){const act=S.t.filter(x=>x.st!='selesai'),PD=S.t.filter(x=>x.st=='pending').sort((a,b)=>umur(b)-umur(a)),
  TL=act.map(x=>[x,lapTelat(x)]).filter(z=>z[1]!==null).sort((a,b)=>b[1]-a[1]);
@@ -726,7 +740,7 @@ function card(x){const u=umur(x),P=prL(x),tl=lapTelat(x),nx=KWN[x.st];
  ${x.ket?`<div class="drb" style="margin-top:8px;background:#fff8e6;color:#7a4a00">${esc(x.ket)}</div>`:''}
  <h3 style="margin-top:10px">Progres (${P.length})</h3>${P.slice(0,3).map(p=>`<div class="lgn"><small>${fd(p.tg)} · ${esc(p.by||'')}</small> · ${p.a?'<i>'+esc(p.x)+'</i>':esc(p.x)}</div>`).join('')||'<small class="mt">Belum ada catatan progres.</small>'}${P.length>3?`<small style="color:var(--m)"> +${P.length-3} lainnya</small>`:''}
  ${canProg(x)?`<div class="row" style="margin-top:8px"><input id="kp_${x.id}" placeholder="Tambah progres, lalu Enter" onkeydown="if(event.key=='Enter')addPr('${x.id}')"><button class="s" onclick="addPr('${x.id}')">Catat</button></div>`:''}
- <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">${nx&&canEdit(x)?`<button class="s" onclick="setSt('${x.id}','${nx[0]}')">${nx[1]}</button>`:''}<button class="s" onclick="tForm('${x.id}')">${canEdit(x)?'Edit / riwayat':'Detail / riwayat'}</button>${x.fo?`<a class="s" style="text-decoration:none" href="${esc(x.fo)}" target="_blank" rel="noopener">📁 Folder</a>`:''}</div></div>`}
+ <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">${nx&&canEdit(x)?`<button class="s" onclick="setSt('${x.id}','${nx[0]}')">${nx[1]}</button>`:''}<button class="s" onclick="tForm('${x.id}')">${canEdit(x)?'Edit / riwayat':'Detail / riwayat'}</button>${x.fo?`<a class="s" style="text-decoration:none" href="${esc(x.fo)}" target="_blank" rel="noopener">📁 Buka folder</a>`:`<span class="fon" style="align-self:center">📁 Link folder belum diisi</span>`}</div></div>`}
 async function setSt(id,st){const x0=fT(id);if(!x0||x0.st==st)return;let ln='';
  if(st=='selesai'&&!String(x0.ln||'').trim()){ln=prompt('Nomor laporan (boleh dikosongkan, bisa diisi nanti):','');if(ln===null)return rr()}
  await mut(id,x=>{x.st=st;x.ps='';x.psn='';if(st=='selesai'&&ln&&!x.ln){x.ln=ln.trim();if(!x.tlp)x.tlp=today()}drv(x);
@@ -783,7 +797,7 @@ function pgH(A){const n=A.length,c=s=>A.filter(x=>x.st==s).length,pc=pcOf(A);
  return {bar:`<div class="pgr"><span class="dn" style="${ringBg(A)}" title="${KWO.map(s=>KWS[s]+': '+c(s)).join(' · ')}"><b>${pc}%</b></span><span class="pgt"><b style="color:var(--ink)">${c('selesai')}</b> dari ${n} selesai<br>progres ${pc}%</span></div>`,
   num:`<span class="pnum">${KWO.map(s=>c(s)?`<span class="st st-${s}">${c(s)} ${KWS[s].toLowerCase()}</span>`:'').join('')}</span>`}}
 function kCard(x){const tl=lapTelat(x),w=x.st=='selesai'?'✓ '+fds(selX(x))+(telatL(x)?` <b style="color:var(--red)">+${telatL(x)} hk</b>`:''):tl!==null?`<b style="color:var(--red)">lap. ${tl} hk</b>`:umur(x)+' hk';
- return `<div class="kcard ${x.st}" ${canEdit(x)?`draggable="true" ondragstart="event.dataTransfer.setData('text/plain','${x.id}')"`:''} onclick="tForm('${x.id}')" title="${esc(x.rc)}${x.aud?'\n🏢 '+esc(x.aud):''}\nTim: ${esc(team(x).join(', '))}"><div class="ttl">${esc(String(x.rc).slice(0,140))}</div><div class="km">${avs(x)}<span>${esc(x.aud||'')}</span>${w}</div>${x.st!='pending'&&x.st!='selesai'&&tAll(x).length?`<div class="km2">📅 ${tglR(x)}</div>`:''}${psEd(x)}</div>`}
+ return `<div class="kcard ${x.st}" ${canEdit(x)?`draggable="true" ondragstart="event.dataTransfer.setData('text/plain','${x.id}')"`:''} onclick="tForm('${x.id}')" title="${esc(x.rc)}${x.aud?'\n🏢 '+esc(x.aud):''}\nTim: ${esc(team(x).join(', '))}"><div class="ttl">${esc(String(x.rc).slice(0,140))}</div><div class="km">${avs(x)}<span>${esc(x.aud||'')}</span>${w}</div>${x.st!='pending'&&x.st!='selesai'&&tAll(x).length?`<div class="km2">📅 ${tglR(x)}</div>`:''}${psEd(x)}${x.fo?`<div class="fow">${foL(x)}</div>`:''}</div>`}
 const KMO=new Set(),PSX=new Map();
 // kotak status per rincian: klik untuk menampilkan kartu status itu saja (default: tertutup, kecuali filter status aktif)
 function kanMini(B,kk){const op=PSX.has(kk)?PSX.get(kk):(DF.st||'');
@@ -818,7 +832,7 @@ function dafL(){const L=dfL(),q=nrm(DF.q).split(/\s+/).filter(Boolean),qa=!!q.le
  ${ds.map(d=>{const B=A.filter(x=>(x.dj||'')==d).sort((a,b)=>KWO.indexOf(a.st)-KWO.indexOf(b.st)||srt(a,b)),k=j+'||'+d,op=DJO.has(k)||qa||ds.length==1&&B.length<=5;
  return `<details class="dj" ${op?'open':''} data-k="${esc(k)}" ontoggle="this.open?DJO.add(this.dataset.k):DJO.delete(this.dataset.k)"><summary>↳ ${esc(d||'Tanpa detail jenis')} <small style="color:var(--m);font-weight:400">(${B.length})</small><span class="cnt">${cntSt(B)}</span></summary>
  <table class="tb kt2"><thead><tr><th style="width:30px">No</th><th style="width:150px">Nomor ND &amp; SPT</th><th>Rincian</th><th style="width:220px">Tim</th><th style="width:230px">Status &amp; progres</th><th style="width:140px">Tanggal pelaksanaan</th><th style="width:150px">Waktu</th><th style="width:80px"></th></tr></thead><tbody>
- ${B.map((x,i)=>{const p=prL(x)[0];return `<tr><td>${i+1}</td><td><small style="color:var(--m)">ND</small> ${x.nd?hl(x.nd,q):'<span class="mt">—</span>'}<br><small style="color:var(--m)">SPT</small> ${x.spt?hl(x.spt,q):'<span class="mt">—</span>'}</td><td style="white-space:pre-line"><a href="#" style="text-decoration:none;color:inherit" onclick="tForm('${x.id}');return false">${hl(x.rc,q)}</a>${x.aud?`<br><small>🏢 ${esc(x.aud)}</small>`:''}${p?`<br><small style="color:var(--m)">📝 ${fd(p.tg)} · ${esc(p.by||'')}: ${esc(String(p.x).slice(0,110))}</small>`:''}</td><td>${timH(x)}</td><td>${selSt(x)}${psEd(x)}</td><td>${tglP(x)}</td><td>${waktu(x)}</td><td class="ac"><button class="x" style="color:var(--ink)" onclick="tForm('${x.id}')">${canEdit(x)?'Edit':'Buka'}</button>${canDel(x)?`<button class="x" onclick="tDel('${x.id}')">Hapus</button>`:''}</td></tr>`}).join('')}</tbody></table></details>`}).join('')}</div></details>`}).join('')}
+ ${B.map((x,i)=>{const p=prL(x)[0];return `<tr><td>${i+1}</td><td><small style="color:var(--m)">ND</small> ${x.nd?hl(x.nd,q):'<span class="mt">—</span>'}<br><small style="color:var(--m)">SPT</small> ${x.spt?hl(x.spt,q):'<span class="mt">—</span>'}</td><td style="white-space:pre-line"><a href="#" style="text-decoration:none;color:inherit" onclick="tForm('${x.id}');return false">${hl(x.rc,q)}</a>${x.aud?`<br><small>🏢 ${esc(x.aud)}</small>`:''}${x.fo?`<br>${foL(x)}`:''}${p?`<br><small style="color:var(--m)">📝 ${fd(p.tg)} · ${esc(p.by||'')}: ${esc(String(p.x).slice(0,110))}</small>`:''}</td><td>${timH(x)}</td><td>${selSt(x)}${psEd(x)}</td><td>${tglP(x)}</td><td>${waktu(x)}</td><td class="ac"><button class="x" style="color:var(--ink)" onclick="tForm('${x.id}')">${canEdit(x)?'Edit':'Buka'}</button>${canDel(x)?`<button class="x" onclick="tDel('${x.id}')">Hapus</button>`:''}</td></tr>`}).join('')}</tbody></table></details>`}).join('')}</div></details>`}).join('')}
 
 // =====================================================================
 // JADWAL TIM (matriks orang × tanggal) & BEBAN KERJA
